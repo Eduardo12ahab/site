@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração - Tyvora</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+        <main class="admin-content">
+            <header class="admin-topo">
+                <h1>Painel</h1>
+                <div class="admin-topo-user" id="admin-user"></div>
+            </header>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #FF6B6B, #FF8E8E);"><i class="fas fa-shopping-cart"></i></div>
+                    <div class="stat-content"><h3 id="total-encomendas">-</h3><p>Encomendas</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #4ECDC4, #6FE7DF);"><i class="fas fa-euro-sign"></i></div>
+                    <div class="stat-content"><h3 id="total-receita">-</h3><p>Receita</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #FFD166, #FFE4A0);"><i class="fas fa-users"></i></div>
+                    <div class="stat-content"><h3 id="total-clientes">-</h3><p>Clientes</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #06D6A0, #4AEFBF);"><i class="fas fa-box"></i></div>
+                    <div class="stat-content"><h3 id="total-produtos">-</h3><p>Produtos</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="stat-content"><h3 id="total-pendentes">-</h3><p>Encomendas pendentes</p></div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                <div class="painel">
+                    <h3>Últimas encomendas</h3>
+                    <div id="encomendas-recentes"><p class="msg-vazio">A carregar...</p></div>
+                </div>
+                <div class="painel">
+                    <h3>Produtos mais vendidos</h3>
+                    <div id="produtos-populares"><p class="msg-vazio">A carregar...</p></div>
+                </div>
+            </div>
+
+            <div class="painel">
+                <h3>Clientes</h3>
+                <div id="lista-clientes"><p class="msg-vazio">A carregar...</p></div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="/admin/produtos" class="btn btn-primary"><i class="fas fa-plus"></i> Gerir produtos</a>
+                <a href="/admin/encomendas" class="btn btn-outline"><i class="fas fa-shopping-cart"></i> Gerir encomendas</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/admin.js"></script>
+    <script>
+        function nomeDe(l) {
+            // Relatório top-produtos: usa a primeira coluna de texto como nome e a última numérica como valor
+            const chaves = Object.keys(l);
+            const chaveNome = chaves.find(k => typeof l[k] === 'string') || chaves[0];
+            const numericas = chaves.filter(k => k !== chaveNome && !isNaN(Number(l[k])) && l[k] !== null);
+            const chaveValor = numericas[numericas.length - 1];
+            return { nome: l[chaveNome], rotulo: chaveValor, valor: chaveValor ? l[chaveValor] : '' };
+        }
+
+        async function carregarPainel() {
+            if (!await iniciarAdmin('/admin')) return;
+
+            try {
+                const r = await api('GET', '/api/admin/resumo');
+                document.getElementById('total-encomendas').textContent = r.totalEncomendas;
+                document.getElementById('total-receita').textContent = formatarMoeda(r.receita);
+                document.getElementById('total-clientes').textContent = r.totalClientes;
+                document.getElementById('total-produtos').textContent = r.totalProdutos;
+                document.getElementById('total-pendentes').textContent = r.encomendasPendentes;
+            } catch (e) {
+                mostrarAviso('Erro ao carregar o resumo: ' + e.message, 'error');
+            }
+
+            const caixaEnc = document.getElementById('encomendas-recentes');
+            try {
+                const lista = (await api('GET', '/api/admin/encomendas')) || [];
+                lista.sort((a, b) => String(b.data).localeCompare(String(a.data)));
+                const ultimas = lista.slice(0, 5);
+                caixaEnc.innerHTML = ultimas.length === 0 ? '<p class="msg-vazio">Ainda não há encomendas.</p>' :
+                    `<div class="tabela-wrap"><table class="tabela"><thead><tr><th>Encomenda</th><th>Cliente</th><th>Data</th><th>Total</th><th>Estado</th></tr></thead><tbody>${
+                    ultimas.map(e => `<tr>
+                        <td><strong>#${escapeHtml(e.id)}</strong></td>
+                        <td>${escapeHtml(e.cliente ? e.cliente.nome : '')}</td>
+                        <td>${escapeHtml(formatarData(e.data))}</td>
+                        <td>${formatarMoeda(e.total)}</td>
+                        <td>${badgeEstado(e.estado)}</td></tr>`).join('')}</tbody></table></div>`;
+            } catch (e) {
+                mensagemErro(caixaEnc, 'Erro ao carregar encomendas: ' + e.message);
+            }
+
+            const caixaTop = document.getElementById('produtos-populares');
+            try {
+                const top = ((await api('GET', '/api/admin/relatorios/top-produtos')) || []).slice(0, 5);
+                caixaTop.innerHTML = top.length === 0 ? '<p class="msg-vazio">Sem vendas ainda.</p>' :
+                    top.map(l => {
+                        const t = nomeDe(l);
+                        return `<div style="display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;border-bottom:1px solid var(--gray-light);">
+                            <span>${escapeHtml(t.nome)}</span>
+                            <strong title="${escapeHtml(t.rotulo || '')}">${escapeHtml(t.valor)}</strong></div>`;
+                    }).join('');
+            } catch (e) {
+                mensagemErro(caixaTop, 'Erro ao carregar relatório: ' + e.message);
+            }
+
+            const caixaCli = document.getElementById('lista-clientes');
+            try {
+                const clientes = (await api('GET', '/api/admin/clientes')) || [];
+                caixaCli.innerHTML = clientes.length === 0 ? '<p class="msg-vazio">Ainda não há clientes.</p>' :
+                    `<div class="tabela-wrap"><table class="tabela"><thead><tr><th>Id</th><th>Nome</th><th>Email</th><th>Papel</th><th>Registo</th><th>Encomendas</th><th>Total gasto</th></tr></thead><tbody>${
+                    clientes.map(c => `<tr>
+                        <td>${escapeHtml(c.id)}</td>
+                        <td>${escapeHtml(c.nome)}</td>
+                        <td>${escapeHtml(c.email)}</td>
+                        <td>${escapeHtml(c.papel)}</td>
+                        <td>${escapeHtml(formatarData(c.dataRegisto))}</td>
+                        <td>${escapeHtml(c.numEncomendas)}</td>
+                        <td>${formatarMoeda(c.totalGasto)}</td></tr>`).join('')}</tbody></table></div>`;
+            } catch (e) {
+                mensagemErro(caixaCli, 'Erro ao carregar clientes: ' + e.message);
+            }
+        }
+
+        carregarPainel();
+    </script>
+</body>
+
+</html>

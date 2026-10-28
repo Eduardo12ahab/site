@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projeto Loja Online — Relatório</title>
+<style>
+  @page { size: A4; margin: 18mm 15mm; }
+  body { font-family: "Segoe UI", Arial, Helvetica, sans-serif; margin: 40px auto; padding: 0 20px; color: #1a1a1a; line-height: 1.55; font-size: 14px; max-width: 1100px; }
+  h1 { color: #1a3c6e; border-bottom: 3px solid #1a3c6e; padding-bottom: 8px; font-size: 28px; }
+  h2 { color: #1a3c6e; margin-top: 34px; border-bottom: 1px solid #ccc; padding-bottom: 4px; font-size: 21px; }
+  h3 { color: #2c5aa0; margin-top: 24px; font-size: 16px; }
+  h4 { color: #333; margin: 14px 0 4px; font-size: 14px; }
+  ul, ol { margin-top: 4px; }
+  li { margin-bottom: 3px; }
+  code { background: #eef; padding: 1px 5px; border-radius: 3px; font-family: Consolas, "Courier New", monospace; font-size: 12.5px; }
+  pre { background: #1e1e1e; color: #eaeaea; padding: 12px 14px; border-radius: 6px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; font-family: Consolas, "Courier New", monospace; font-size: 12px; line-height: 1.4; border-left: 4px solid #2c5aa0; }
+  pre.mermaid { background: #fff; color: #000; border: 1px solid #ccc; border-left: 1px solid #ccc; text-align: center; white-space: pre; overflow-x: auto; page-break-inside: avoid; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 13px; }
+  tr { page-break-inside: avoid; }
+  th, td { border: 1px solid #bbb; padding: 5px 8px; text-align: left; vertical-align: top; }
+  th { background: #e6edf7; color: #1a3c6e; }
+  .box { background: #fafafa; border: 1px solid #ddd; padding: 10px 16px; border-radius: 6px; margin: 10px 0; }
+  .aviso { background: #fff8e1; border-left: 4px solid #f0ad4e; padding: 8px 14px; margin: 12px 0; border-radius: 4px; font-size: 13px; }
+  .captura { border: 2px dashed #999; background: #f5f5f5; color: #666; text-align: center; padding: 40px 10px; margin: 10px 0; border-radius: 6px; font-style: italic; page-break-inside: avoid; }
+  .diagrama { margin: 14px 0; text-align: center; page-break-inside: avoid; }
+  .diagrama svg { max-width: 100%; height: auto; }
+  .legenda { font-size: 12px; color: #555; margin-top: 4px; font-style: italic; text-align: center; }
+  .peso { font-size: 12px; font-weight: normal; color: #666; }
+  .capa { text-align: center; margin-bottom: 20px; }
+  .indice a { text-decoration: none; color: #1a3c6e; }
+  .indice a:hover { text-decoration: underline; }
+  .page-break { page-break-before: always; }
+  .qa dt { font-weight: bold; color: #1a3c6e; margin-top: 10px; }
+  .qa dd { margin: 2px 0 0 18px; }
+  @media print {
+    body { margin: 0; padding: 0; max-width: none; font-size: 11.5px; }
+    pre { background: #f3f3f3; color: #000; border-left: 3px solid #555; font-size: 10px; }
+    h2 { page-break-after: avoid; }
+    h3 { page-break-after: avoid; }
+    .captura { padding: 25px 10px; }
+  }
+</style>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, securityLevel: 'loose', theme: 'default' });
+</script>
+</head>
+<body>
+
+<div class="capa">
+<h1>Projeto Loja Online — Relatório</h1>
+<p><strong>Loja online com SQL Server, Spring Boot e Node/Express</strong><br>
+Trabalho universitário — Bases de Dados<br>
+Autor: [nome e número do aluno] &nbsp;|&nbsp; Data: outubro de 2026</p>
+</div>
+
+<p>Este relatório descreve a loja online desenvolvida: requisitos, modelação UML, base de dados (14 tabelas), gatilhos, consultas SQL, interfaces e arquitetura, terminando com um guião de apoio à defesa oral. A estrutura segue a grelha de avaliação (as percentagens indicam o peso de cada critério).</p>
+
+<h2 class="indice">Índice</h2>
+<ol class="indice">
+  <li><a href="#s1">Especificação de requisitos funcionais e não funcionais</a> <span class="peso">(5%)</span></li>
+  <li><a href="#s2">Modelação UML de requisitos</a> <span class="peso">(15%)</span></li>
+  <li><a href="#s3">Modelação UML da base de dados e modelo relacional</a> <span class="peso">(15%)</span></li>
+  <li><a href="#s4">Gatilhos e asserções</a> <span class="peso">(10%)</span></li>
+  <li><a href="#s5">Interrogações SQL à base de dados</a> <span class="peso">(15%)</span></li>
+  <li><a href="#s6">Interfaces gráficas</a> <span class="peso">(10%)</span></li>
+  <li><a href="#s7">Arquitetura e guião da defesa oral</a> <span class="peso">(30%)</span></li>
+</ol>
+
+<h2 id="s1" class="page-break">1. Especificação de requisitos funcionais e não funcionais <span class="peso">(5%)</span></h2>
+
+<h3>1.1 Âmbito e atores</h3>
+<p>A loja online permite a clientes consultar um catálogo de produtos, montar um carrinho, finalizar encomendas, pagar, acompanhar o histórico, avaliar produtos e pedir devoluções. Os administradores gerem produtos, encomendas e devoluções e consultam relatórios. O sistema tem <strong>dois atores</strong>:</p>
+<ul>
+  <li><strong>Cliente</strong> — utilizador registado que compra e gere as suas encomendas (<code>Cliente.Papel = 'Cliente'</code>). A consulta do catálogo é pública (sem login).</li>
+  <li><strong>Administrador</strong> — utilizador com <code>Cliente.Papel = 'Admin'</code>; herda tudo o que o cliente faz e acede a <code>/api/admin/**</code>.</li>
+</ul>
+<p><strong>Fora de âmbito</strong> (não implementado): entregas/transportadoras, inventário separado, lista de desejos, promoções e qualquer funcionalidade de inteligência artificial.</p>
+
+<h3>1.2 Requisitos funcionais</h3>
+<table>
+<tr><th style="width:70px">Código</th><th>Requisito</th><th style="width:90px">Ator</th></tr>
+<tr><td>RF01</td><td>O visitante pode registar-se indicando nome, email, palavra-passe (mín. 6 caracteres) e, opcionalmente, telefone e NIF. O email é único. O registo cria também o carrinho do cliente.</td><td>Visitante</td></tr>
+<tr><td>RF02</td><td>O utilizador pode iniciar e terminar sessão; a sessão guarda identificador, nome, email e indicação de administrador.</td><td>Cliente, Admin</td></tr>
+<tr><td>RF03</td><td>Qualquer visitante pode listar produtos ativos, filtrar por categoria, pesquisar por texto (nome/descrição) e ordenar por preço, nome ou avaliação.</td><td>Visitante</td></tr>
+<tr><td>RF04</td><td>Qualquer visitante pode consultar o detalhe de um produto (preço, stock, categoria, fornecedor, avaliação média) e as suas avaliações.</td><td>Visitante</td></tr>
+<tr><td>RF05</td><td>O cliente pode adicionar produtos ao carrinho, alterar a quantidade e remover itens; cada produto aparece no máximo uma vez por carrinho.</td><td>Cliente</td></tr>
+<tr><td>RF06</td><td>O cliente pode gerir moradas de envio (listar e criar).</td><td>Cliente</td></tr>
+<tr><td>RF07</td><td>O cliente pode finalizar a compra (checkout): escolhe morada, método de pagamento e, opcionalmente, um cupão; o sistema cria a encomenda com linhas, regista o pagamento como pendente e esvazia o carrinho.</td><td>Cliente</td></tr>
+<tr><td>RF08</td><td>O sistema calcula o total da encomenda (linhas − desconto do cupão + portes). Os portes são 4,99 € e grátis acima de 50 € de subtotal.</td><td>Sistema</td></tr>
+<tr><td>RF09</td><td>O cliente pode pagar uma encomenda pendente; o pagamento passa a Processado e a encomenda a Paga.</td><td>Cliente</td></tr>
+<tr><td>RF10</td><td>O cliente pode cancelar uma encomenda Pendente ou Paga; se estava paga, o pagamento é reembolsado e o stock é reposto.</td><td>Cliente</td></tr>
+<tr><td>RF11</td><td>O cliente pode consultar o histórico das suas encomendas (linhas, morada, pagamento, cupão, estado).</td><td>Cliente</td></tr>
+<tr><td>RF12</td><td>O cliente pode avaliar um produto (nota 1 a 5 e comentário), no máximo uma vez por produto.</td><td>Cliente</td></tr>
+<tr><td>RF13</td><td>O cliente pode pedir a devolução de itens de uma encomenda entregue, indicando motivo e quantidades, e consultar as suas devoluções.</td><td>Cliente</td></tr>
+<tr><td>RF14</td><td>Os cupões de desconto são validados (validade e número de utilizações) e contabilizam cada utilização.</td><td>Sistema</td></tr>
+<tr><td>RF15</td><td>O stock é descontado ao criar a encomenda e reposto ao cancelar ou ao concluir uma devolução.</td><td>Sistema</td></tr>
+<tr><td>RF16</td><td>O administrador pode listar, criar e editar produtos e desativá-los (eliminação lógica).</td><td>Admin</td></tr>
+<tr><td>RF17</td><td>O administrador pode listar encomendas de todos os clientes (com filtro por estado) e alterar o estado (Enviada, Entregue, ...), respeitando as transições permitidas.</td><td>Admin</td></tr>
+<tr><td>RF18</td><td>O administrador pode listar devoluções e alterar o seu estado (Aprovada, Recusada, Concluída).</td><td>Admin</td></tr>
+<tr><td>RF19</td><td>O administrador pode consultar a lista de clientes e um resumo (totais de produtos, clientes, encomendas, receita e pendentes).</td><td>Admin</td></tr>
+<tr><td>RF20</td><td>O administrador pode consultar seis relatórios: vendas por produto, clientes ativos, stock baixo, top de produtos, média de avaliações e encomendas pendentes.</td><td>Admin</td></tr>
+</table>
+
+<h3>1.3 Requisitos não funcionais</h3>
+<table>
+<tr><th style="width:70px">Código</th><th style="width:130px">Categoria</th><th>Requisito</th></tr>
+<tr><td>RNF01</td><td>Segurança</td><td>As palavras-passe são guardadas com hash BCrypt (<code>PasswordHash</code>); nunca em texto simples.</td></tr>
+<tr><td>RNF02</td><td>Segurança</td><td>As rotas <code>/api/admin/**</code> exigem sessão com <code>Papel = 'Admin'</code> (403 caso contrário); as rotas de cliente exigem sessão (401).</td></tr>
+<tr><td>RNF03</td><td>Segurança</td><td>Todo o SQL usa parâmetros (<code>JdbcTemplate</code> com <code>?</code>), o que evita injeção de SQL.</td></tr>
+<tr><td>RNF04</td><td>Integridade</td><td>Integridade referencial por chaves estrangeiras, chaves únicas e restrições CHECK (preço &gt; 0, stock &ge; 0, nota 1-5, estados válidos).</td></tr>
+<tr><td>RNF05</td><td>Integridade</td><td>As regras de negócio entre tabelas (stock, total, cupões, transições de estado, devoluções) são garantidas por gatilhos na base de dados, independentemente da aplicação.</td></tr>
+<tr><td>RNF06</td><td>Consistência</td><td>A criação da encomenda (encomenda, linhas, pagamento, esvaziar carrinho), o pagamento e o cancelamento executam numa transação: ou tudo ou nada.</td></tr>
+<tr><td>RNF07</td><td>Desempenho</td><td>Operações normais respondem em tempo razoável (objetivo: menos de 1 segundo em ambiente de desenvolvimento com o volume de dados do projeto); chaves primárias e únicas criam os índices necessários às pesquisas principais.</td></tr>
+<tr><td>RNF08</td><td>Usabilidade</td><td>Interface web em português de Portugal; erros devolvidos como <code>{ "message": "..." }</code> com código HTTP adequado (400, 401, 403, 404, 409, 500).</td></tr>
+<tr><td>RNF09</td><td>Arquitetura</td><td>Separação em três camadas: frontend (HTML/CSS/JS servido por Node/Express), backend REST (Java Spring Boot) e SQL Server. O browser fala apenas com a porta 3000 (mesma origem; o cookie de sessão passa).</td></tr>
+<tr><td>RNF10</td><td>Manutenção</td><td>SQL escrito à mão (sem ORM) e scripts numerados e idempotentes (<code>05</code> a <code>08</code>) que recriam o modelo, os gatilhos, as consultas e os testes.</td></tr>
+<tr><td>RNF11</td><td>Portabilidade</td><td>Executa em localhost: SQL Server (porta 1433), Spring Boot (8080) e Node (3000), sem serviços externos.</td></tr>
+</table>
+<div class="aviso">Para o requisito RNF07 não foram feitas medições formais de desempenho; é um objetivo qualitativo.</div>
+
+<h2 id="s2" class="page-break">2. Modelação UML de requisitos <span class="peso">(15%)</span></h2>
+<p>Esta secção apresenta os diagramas UML de requisitos e de comportamento: casos de uso (2.1), classes (2.2), sequência do checkout (2.3), atividade da compra (2.4) e estados da Encomenda e da Devolução (2.5).</p>
+
+<h3>2.1 Diagrama de casos de uso</h3>
+<div class="diagrama">
+<svg viewBox="0 0 900 720" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif" font-size="12">
+  <defs>
+    <marker id="seta" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#333"/></marker>
+    <marker id="gen" markerWidth="14" markerHeight="12" refX="13" refY="6" orient="auto"><path d="M0,0 L13,6 L0,12 Z" fill="#fff" stroke="#333" stroke-width="1.5"/></marker>
+  </defs>
+  <rect x="170" y="30" width="570" height="620" rx="10" fill="#fcfcff" stroke="#1a3c6e" stroke-width="2"/>
+  <text x="455" y="22" text-anchor="middle" font-weight="bold" fill="#1a3c6e" font-size="14">Sistema: Loja Online</text>
+
+  <!-- Ator Cliente -->
+  <g stroke="#333" stroke-width="2" fill="none">
+    <circle cx="70" cy="262" r="16"/><line x1="70" y1="278" x2="70" y2="325"/>
+    <line x1="40" y1="292" x2="100" y2="292"/><line x1="70" y1="325" x2="46" y2="360"/><line x1="70" y1="325" x2="94" y2="360"/>
+  </g>
+  <text x="70" y="380" text-anchor="middle" font-weight="bold">Cliente</text>
+  <!-- Ator Administrador -->
+  <g stroke="#333" stroke-width="2" fill="none">
+    <circle cx="830" cy="262" r="16"/><line x1="830" y1="278" x2="830" y2="325"/>
+    <line x1="800" y1="292" x2="860" y2="292"/><line x1="830" y1="325" x2="806" y2="360"/><line x1="830" y1="325" x2="854" y2="360"/>
+  </g>
+  <text x="830" y="380" text-anchor="middle" font-weight="bold">Administrador</text>
+
+  <!-- Ligacoes Cliente (de 100,300 para a borda esquerda das elipses) -->
+  <g stroke="#555" stroke-width="1.2" fill="none">
+    <line x1="100" y1="295" x2="196" y2="110"/>
+    <line x1="100" y1="295" x2="196" y2="170"/>
+    <line x1="100" y1="295" x2="196" y2="230"/>
+    <line x1="100" y1="295" x2="196" y2="290"/>
+    <line x1="100" y1="300" x2="196" y2="350"/>
+    <line x1="100" y1="305" x2="196" y2="410"/>
+    <line x1="100" y1="310" x2="196" y2="470"/>
+    <line x1="100" y1="315" x2="196" y2="530"/>
+    <line x1="100" y1="320" x2="196" y2="590"/>
+    <!-- Cliente e Admin -> Iniciar sessao -->
+    <polyline points="70,244 70,60 375,60"/>
+    <polyline points="830,244 830,60 535,60"/>
+    <!-- Ligacoes Admin -->
+    <line x1="800" y1="295" x2="714" y2="130"/>
+    <line x1="800" y1="295" x2="714" y2="210"/>
+    <line x1="800" y1="295" x2="714" y2="290"/>
+    <line x1="800" y1="300" x2="714" y2="370"/>
+    <line x1="800" y1="300" x2="714" y2="450"/>
+  </g>
+  <!-- Generalizacao Admin -> Cliente -->
+  <polyline points="830,380 830,690 70,690 70,392" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#gen)"/>
+  <text x="450" y="684" text-anchor="middle" font-size="11" fill="#333">generalização: o Administrador pode fazer tudo o que o Cliente faz</text>
+
+  <!-- Casos de uso: Iniciar sessao (partilhado) -->
+  <ellipse cx="455" cy="60" rx="80" ry="22" fill="#e6edf7" stroke="#2c5aa0"/><text x="455" y="64" text-anchor="middle">Iniciar sessão</text>
+
+  <!-- Coluna esquerda (Cliente) -->
+  <g fill="#e6edf7" stroke="#2c5aa0">
+    <ellipse cx="290" cy="110" rx="95" ry="24"/>
+    <ellipse cx="290" cy="170" rx="95" ry="24"/>
+    <ellipse cx="290" cy="230" rx="95" ry="24"/>
+    <ellipse cx="290" cy="290" rx="95" ry="24"/>
+    <ellipse cx="290" cy="350" rx="95" ry="24"/>
+    <ellipse cx="290" cy="410" rx="95" ry="24"/>
+    <ellipse cx="290" cy="470" rx="95" ry="24"/>
+    <ellipse cx="290" cy="530" rx="95" ry="24"/>
+    <ellipse cx="290" cy="590" rx="95" ry="24"/>
+  </g>
+  <g text-anchor="middle" fill="#111">
+    <text x="290" y="114">Registar-se</text>
+    <text x="290" y="174">Consultar produtos</text>
+    <text x="290" y="234">Gerir carrinho</text>
+    <text x="290" y="294">Finalizar compra</text>
+    <text x="290" y="354">Pagar encomenda</text>
+    <text x="290" y="414">Cancelar encomenda</text>
+    <text x="290" y="474">Consultar histórico</text>
+    <text x="290" y="534">Avaliar produto</text>
+    <text x="290" y="594">Pedir devolução</text>
+  </g>
+
+  <!-- Casos de uso auxiliares (centro) -->
+  <g fill="#fff8e1" stroke="#c98a1b">
+    <ellipse cx="470" cy="240" rx="50" ry="22"/>
+    <ellipse cx="470" cy="345" rx="50" ry="22"/>
+  </g>
+  <g text-anchor="middle" font-size="10.5" fill="#111">
+    <text x="470" y="244">Aplicar cupão</text>
+    <text x="470" y="349">Escolher morada</text>
+  </g>
+  <!-- extend: Aplicar cupao -> Finalizar compra ; include: Finalizar compra -> Escolher morada -->
+  <line x1="430" y1="254" x2="374" y2="278" stroke="#333" stroke-dasharray="5,3" marker-end="url(#seta)"/>
+  <text x="470" y="276" text-anchor="middle" font-size="10" fill="#333">&lt;&lt;extend&gt;&gt;</text>
+  <line x1="372" y1="304" x2="432" y2="332" stroke="#333" stroke-dasharray="5,3" marker-end="url(#seta)"/>
+  <text x="470" y="318" text-anchor="middle" font-size="10" fill="#333">&lt;&lt;include&gt;&gt;</text>
+
+  <!-- Coluna direita (Admin) -->
+  <g fill="#e6f4ea" stroke="#2e7d32">
+    <ellipse cx="620" cy="130" rx="95" ry="24"/>
+    <ellipse cx="620" cy="210" rx="95" ry="24"/>
+    <ellipse cx="620" cy="290" rx="95" ry="24"/>
+    <ellipse cx="620" cy="370" rx="95" ry="24"/>
+    <ellipse cx="620" cy="450" rx="95" ry="24"/>
+  </g>
+  <g text-anchor="middle" fill="#111">
+    <text x="620" y="134">Gerir produtos</text>
+    <text x="620" y="214">Gerir encomendas</text>
+    <text x="620" y="294">Gerir devoluções</text>
+    <text x="620" y="374">Consultar relatórios</text>
+    <text x="620" y="454">Consultar clientes e resumo</text>
+  </g>
+</svg>
+<div class="legenda">Figura 1 — Casos de uso. Azul: casos do Cliente; verde: casos do Administrador; amarelo: casos auxiliares. Os casos que exigem sessão pressupõem Iniciar sessão.</div>
+</div>
+
+<h3>2.2 Descrição dos casos de uso principais</h3>
+<table>
+<tr><th style="width:130px">Caso de uso</th><th style="width:80px">Ator</th><th style="width:150px">Pré-condição</th><th>Fluxo principal</th><th style="width:200px">Fluxos alternativos</th></tr>
+<tr><td>UC01 Registar-se</td><td>Visitante</td><td>Email ainda não registado</td>
+<td>1. Preenche nome, email, senha (e telefone/NIF). 2. O sistema grava o cliente com hash BCrypt. 3. Cria o carrinho. 4. Confirma o registo.</td>
+<td>Dados em falta ou senha com menos de 6 caracteres: erro 400. Email já existente: erro 409.</td></tr>
+<tr><td>UC02 Iniciar sessão</td><td>Cliente, Admin</td><td>Conta existente</td>
+<td>1. Indica email e senha. 2. O sistema compara com o hash BCrypt. 3. Cria a sessão (id, nome, email, isAdmin).</td>
+<td>Credenciais inválidas: erro 401.</td></tr>
+<tr><td>UC04 Gerir carrinho</td><td>Cliente</td><td>Sessão iniciada</td>
+<td>1. Adiciona um produto com quantidade. 2. O sistema soma à linha existente ou cria-a. 3. O cliente altera quantidades ou remove itens.</td>
+<td>Produto inexistente: 404. Quantidade menor que 1: 400.</td></tr>
+<tr><td>UC05 Finalizar compra</td><td>Cliente</td><td>Sessão iniciada; carrinho com itens; morada existente</td>
+<td>1. Escolhe morada e método de pagamento. 2. Opcionalmente aplica um cupão. 3. O sistema, numa transação, cria a encomenda (Pendente), as linhas (preço atual), o pagamento (Pendente) e esvazia o carrinho. 4. Os gatilhos descontam o stock e calculam o total.</td>
+<td>Carrinho vazio, morada ou cupão inválidos: 400. Stock insuficiente: 409 e nada é gravado.</td></tr>
+<tr><td>UC06 Pagar encomenda</td><td>Cliente</td><td>Encomenda própria Pendente</td>
+<td>1. Pede o pagamento. 2. O sistema, numa transação, marca o pagamento Processado e a encomenda Paga.</td>
+<td>Encomenda já não Pendente: 409.</td></tr>
+<tr><td>UC07 Cancelar encomenda</td><td>Cliente</td><td>Encomenda Pendente ou Paga</td>
+<td>1. Pede o cancelamento. 2. Se estava Paga, o pagamento passa a Reembolsado. 3. A encomenda passa a Cancelada e o gatilho repõe o stock.</td>
+<td>Encomenda Enviada, Entregue ou Cancelada: 409.</td></tr>
+<tr><td>UC09 Avaliar produto</td><td>Cliente</td><td>Sessão iniciada</td>
+<td>1. Indica nota (1-5) e comentário. 2. O sistema grava a avaliação.</td>
+<td>Já avaliou este produto: 409. Nota fora de 1-5: 400 (CHECK).</td></tr>
+<tr><td>UC10 Pedir devolução</td><td>Cliente</td><td>Encomenda própria Entregue</td>
+<td>1. Escolhe a encomenda, o motivo e os itens com quantidades. 2. O sistema cria a devolução (Pedida) e os itens.</td>
+<td>Encomenda não entregue: 409 (gatilho). Quantidade acima da comprada: 400.</td></tr>
+<tr><td>UC12 Gerir produtos</td><td>Admin</td><td>Sessão de Admin</td>
+<td>1. Lista todos os produtos (incluindo inativos). 2. Cria ou edita (SKU, nome, preço, stock, categoria, fornecedor). 3. Desativa (Ativo = 0).</td>
+<td>Não administrador: 403. SKU duplicado ou preço inválido: erro de restrição.</td></tr>
+<tr><td>UC13 Gerir encomendas</td><td>Admin</td><td>Sessão de Admin</td>
+<td>1. Lista encomendas (filtro por estado). 2. Marca Enviada e depois Entregue.</td>
+<td>Transição inválida (por exemplo Pendente para Entregue): 409 (gatilho).</td></tr>
+<tr><td>UC14 Gerir devoluções</td><td>Admin</td><td>Sessão de Admin</td>
+<td>1. Lista devoluções. 2. Aprova ou recusa. 3. Conclui; o gatilho repõe o stock dos itens.</td>
+<td>Recusada é estado final.</td></tr>
+<tr><td>UC15 Consultar relatórios</td><td>Admin</td><td>Sessão de Admin</td>
+<td>1. Escolhe um dos seis relatórios. 2. O sistema executa a consulta e devolve as linhas.</td>
+<td>Nome de relatório desconhecido: 404.</td></tr>
+</table>
+<p>Os casos UC03 (consultar produtos), UC08 (consultar histórico) e UC11 (consultar clientes e resumo) são consultas simples (SELECT) sem alternativas relevantes.</p>
+
+<h3>2.3 Diagrama de classes</h3>
+<p>As classes correspondem às 14 tabelas. As classes <code>LinhaEncomenda</code>, <code>ItemCarrinho</code> e <code>ItemDevolucao</code> são classes de associação (muitos-para-muitos entre Encomenda/Carrinho/Devolucao e Produto) e têm chave composta.</p>
+<pre class="mermaid">
+classDiagram
+direction LR
+class Cliente {
+  +int clienteId
+  +string nome
+  +string email
+  +string passwordHash
+  +string nif
+  +date dataNascimento
+  +string telefone
+  +datetime dataRegisto
+  +string papel
+}
+class Morada {
+  +int moradaId
+  +string tipo
+  +string rua
+  +string codigoPostal
+  +string cidade
+  +string pais
+}
+class Categoria {
+  +int categoriaId
+  +string nome
+}
+class Fornecedor {
+  +int fornecedorId
+  +string nome
+  +string email
+  +string telefone
+}
+class Produto {
+  +int produtoId
+  +string sku
+  +string nome
+  +string descricao
+  +decimal preco
+  +int stock
+  +string imagemUrl
+  +bool ativo
+}
+class Cupao {
+  +int cupaoId
+  +string codigo
+  +decimal percentagemDesconto
+  +date dataValidade
+  +int usosMaximos
+  +int usosAtuais
+}
+class Encomenda {
+  +int encomendaId
+  +datetime dataEncomenda
+  +datetime dataAtualizacao
+  +string estado
+  +decimal custoPortes
+  +decimal total
+}
+class LinhaEncomenda {
+  +int quantidade
+  +decimal precoUnitario
+}
+class Pagamento {
+  +int pagamentoId
+  +string metodo
+  +decimal valor
+  +datetime dataPagamento
+  +string estado
+}
+class Avaliacao {
+  +int avaliacaoId
+  +int nota
+  +string comentario
+  +datetime dataAvaliacao
+}
+class Carrinho {
+  +int carrinhoId
+  +datetime dataCriacao
+}
+class ItemCarrinho {
+  +int quantidade
+  +datetime dataAdicao
+}
+class Devolucao {
+  +int devolucaoId
+  +datetime dataDevolucao
+  +string motivo
+  +string estado
+}
+class ItemDevolucao {
+  +int quantidade
+  +string motivo
+}
+Cliente "1" --> "0..*" Morada : possui
+Cliente "1" --> "0..*" Encomenda : faz
+Cliente "1" --> "0..1" Carrinho : tem
+Cliente "1" --> "0..*" Avaliacao : escreve
+Produto "1" --> "0..*" Avaliacao : recebe
+Categoria "0..1" --> "0..*" Categoria : subcategoria
+Categoria "1" --> "0..*" Produto : agrupa
+Fornecedor "0..1" --> "0..*" Produto : fornece
+Cupao "0..1" --> "0..*" Encomenda : aplicado em
+Morada "1" --> "0..*" Encomenda : envio para
+Encomenda "1" *-- "1..*" LinhaEncomenda : contem
+Produto "1" --> "0..*" LinhaEncomenda : vendido em
+Encomenda "1" *-- "0..1" Pagamento : paga-se com
+Encomenda "1" --> "0..*" Devolucao : origina
+Carrinho "1" *-- "0..*" ItemCarrinho : contem
+Produto "1" --> "0..*" ItemCarrinho : colocado em
+Devolucao "1" *-- "1..*" ItemDevolucao : contem
+Produto "1" --> "0..*" ItemDevolucao : devolvido em
+</pre>
+<div class="legenda">Figura 2 — Diagrama de classes. O losango preenchido indica composição (apagar o carrinho ou a devolução apaga os itens: ON DELETE CASCADE).</div>
+<p>Notas: a multiplicidade <code>1..*</code> em <code>LinhaEncomenda</code> e <code>ItemDevolucao</code> é uma regra de negócio (uma encomenda sem linhas não pode ser paga, gatilho <code>trg_Encomenda_Estado</code>); ao nível da tabela a encomenda é criada primeiro e as linhas depois.</p>
+
+
+<h3>2.4 Diagrama de sequência: checkout e pagamento</h3>
+<p>O checkout é executado numa única transação no backend. Os gatilhos da base de dados descontam o stock e calculam o total; o Java não repete essa lógica.</p>
+<pre class="mermaid">
+sequenceDiagram
+autonumber
+actor C as Cliente
+participant F as Frontend Node 3000
+participant B as Backend Spring Boot 8080
+participant DB as SQL Server 1433
+C->>F: Clica em Finalizar compra (moradaId, metodoPagamento, cupao)
+F->>B: POST /api/encomendas (proxy de /api, cookie JSESSIONID)
+B->>B: Valida sessao e lê o carrinho
+B->>DB: BEGIN TRANSACTION
+B->>DB: INSERT Encomenda (Estado Pendente, portes, Total 0)
+DB-->>DB: Gatilho trg_Encomenda_UsaCupao valida cupao e soma UsosAtuais
+loop para cada item do carrinho
+  B->>DB: INSERT LinhaEncomenda (PrecoUnitario = preco atual)
+  DB-->>DB: Gatilho trg_LinhaEncomenda_DescontaStock desconta o stock
+  DB-->>DB: Gatilho trg_LinhaEncomenda_Total recalcula Encomenda.Total
+end
+alt stock insuficiente (erro 547) ou cupao invalido (50002)
+  DB-->>B: Erro SQL
+  B->>DB: ROLLBACK
+  B-->>F: 409 ou 400 com message
+  F-->>C: Mostra o erro
+else tudo correto
+  B->>DB: SELECT Total da encomenda
+  B->>DB: INSERT Pagamento (Estado Pendente, Valor = Total)
+  B->>DB: DELETE ItemCarrinho do cliente
+  B->>DB: COMMIT
+  B-->>F: 201 Encomenda
+  F-->>C: Mostra a encomenda Pendente
+end
+Note over C,DB: Fase de pagamento
+C->>F: Clica em Pagar
+F->>B: POST /api/encomendas/id/pagar
+B->>DB: BEGIN TRANSACTION
+B->>DB: UPDATE Pagamento SET Estado Processado
+B->>DB: UPDATE Encomenda SET Estado Paga
+DB-->>DB: Gatilho trg_Encomenda_Estado valida transicao e atualiza DataAtualizacao
+B->>DB: COMMIT
+B-->>F: 200 Encomenda Paga
+F-->>C: Mostra encomenda Paga
+</pre>
+<div class="legenda">Figura 3 — Sequência do checkout e do pagamento.</div>
+
+<h3>2.5 Diagrama de atividade: compra</h3>
+<pre class="mermaid">
+flowchart TD
+A(["Início"]) --> B["Consultar produtos"]
+B --> C{"Tem sessão iniciada?"}
+C -- "Não" --> D["Registar-se ou iniciar sessão"]
+D --> E["Adicionar produto ao carrinho"]
+C -- "Sim" --> E
+E --> F{"Mais produtos?"}
+F -- "Sim" --> B
+F -- "Não" --> G["Ir para o checkout"]
+G --> H["Escolher morada e método de pagamento"]
+H --> I{"Tem cupão?"}
+I -- "Sim" --> J["Indicar o código do cupão"]
+I -- "Não" --> K
+J --> K["Backend inicia a transação e insere Encomenda e LinhaEncomenda"]
+K --> L{"Cupão válido?"}
+L -- "Não" --> X["ROLLBACK e erro 400"]
+L -- "Sim" --> M{"Há stock suficiente?"}
+M -- "Não" --> Y["ROLLBACK e erro 409"]
+M -- "Sim" --> O["Gatilhos descontam stock e calculam o total; cria Pagamento Pendente; esvazia carrinho; COMMIT"]
+X --> H
+Y --> B
+O --> P{"Cliente paga agora?"}
+P -- "Não" --> Q["Encomenda fica Pendente ou é cancelada"]
+P -- "Sim" --> R["Pagamento Processado e Encomenda Paga"]
+R --> S["Admin marca Enviada"]
+S --> T["Admin marca Entregue"]
+T --> U(["Fim"])
+Q --> U
+</pre>
+<div class="legenda">Figura 4 — Atividade da compra, com as decisões de login, cupão, stock e pagamento.</div>
+
+<h3>2.6 Diagramas de estados</h3>
+<h4>Encomenda</h4>
+<pre class="mermaid">
+stateDiagram-v2
+[*] --> Pendente : checkout
+Pendente --> Paga : pagar
+Pendente --> Cancelada : cancelar
+Paga --> Enviada : admin envia
+Paga --> Cancelada : cancelar com reembolso
+Enviada --> Entregue : admin confirma entrega
+Entregue --> [*]
+Cancelada --> [*]
+</pre>
+<div class="legenda">Figura 5 — Estados da Encomenda (validados pelo gatilho trg_Encomenda_Estado e pela CHECK CK_Encomenda_Estado).</div>
+<h4>Devolução</h4>
+<pre class="mermaid">
+stateDiagram-v2
+[*] --> Pedida : cliente pede (encomenda Entregue)
+Pedida --> Aprovada : admin aprova
+Pedida --> Recusada : admin recusa
+Aprovada --> Concluida : admin conclui (stock reposto)
+Recusada --> [*]
+Concluida --> [*]
+</pre>
+<div class="legenda">Figura 6 — Estados da Devolução. A encomenda mantém-se Entregue; o stock só volta quando a devolução passa a Concluída.</div>
+<div class="aviso">As transições da Devolução não são validadas por gatilho (só há a CHECK com os quatro valores e o gatilho que repõe stock ao passar a Concluída); a ordem Pedida, Aprovada, Concluída é respeitada pela aplicação/administrador.</div>
+
+<h2 id="s3" class="page-break">3. Modelação UML da base de dados e modelo relacional <span class="peso">(15%)</span></h2>
+<p>Base de dados <code>EcommerceDB</code> em SQL Server, com <strong>14 tabelas</strong>. Foram criadas inicialmente 9 tabelas; o script <code>05_completar_modelo.sql</code> acrescenta Fornecedor, Carrinho, ItemCarrinho, Devolucao e ItemDevolucao, as colunas <code>Cliente.Papel</code> e <code>Produto.FornecedorId</code> e as restrições CHECK.</p>
+
+<h3>3.1 Diagrama entidade-relação</h3>
+<pre class="mermaid">
+erDiagram
+CLIENTE ||--o{ MORADA : possui
+CLIENTE ||--o{ ENCOMENDA : faz
+CLIENTE ||--o| CARRINHO : tem
+CLIENTE ||--o{ AVALIACAO : escreve
+PRODUTO ||--o{ AVALIACAO : recebe
+CATEGORIA ||--o{ PRODUTO : agrupa
+CATEGORIA |o--o{ CATEGORIA : "pai de"
+FORNECEDOR |o--o{ PRODUTO : fornece
+CUPAO |o--o{ ENCOMENDA : "aplicado em"
+MORADA ||--o{ ENCOMENDA : "envio para"
+ENCOMENDA ||--|{ LINHAENCOMENDA : contem
+PRODUTO ||--o{ LINHAENCOMENDA : "vendido em"
+ENCOMENDA ||--o| PAGAMENTO : "paga-se com"
+ENCOMENDA ||--o{ DEVOLUCAO : origina
+DEVOLUCAO ||--|{ ITEMDEVOLUCAO : contem
+PRODUTO ||--o{ ITEMDEVOLUCAO : "devolvido em"
+CARRINHO ||--o{ ITEMCARRINHO : contem
+PRODUTO ||--o{ ITEMCARRINHO : "colocado em"
+
+CLIENTE {
+  int ClienteId PK
+  varchar Nome
+  varchar Email UK
+  varchar PasswordHash
+  varchar NIF
+  date DataNascimento
+  varchar Telefone
+  datetime DataRegisto
+  varchar Papel
+}
+MORADA {
+  int MoradaId PK
+  int ClienteId FK
+  varchar Tipo
+  varchar Rua
+  varchar CodigoPostal
+  varchar Cidade
+  varchar Pais
+}
+CATEGORIA {
+  int CategoriaId PK
+  varchar Nome
+  int CategoriaPaiId FK
+}
+FORNECEDOR {
+  int FornecedorId PK
+  varchar Nome
+  varchar Email
+  varchar Telefone
+}
+PRODUTO {
+  int ProdutoId PK
+  varchar SKU UK
+  varchar Nome
+  varchar Descricao
+  decimal Preco
+  int Stock
+  varchar ImagemUrl
+  bit Ativo
+  int CategoriaId FK
+  int FornecedorId FK
+}
+CUPAO {
+  int CupaoId PK
+  varchar Codigo UK
+  decimal PercentagemDesconto
+  date DataValidade
+  int UsosMaximos
+  int UsosAtuais
+}
+ENCOMENDA {
+  int EncomendaId PK
+  int ClienteId FK
+  int CupaoId FK
+  int MoradaEnvioId FK
+  datetime DataEncomenda
+  datetime DataAtualizacao
+  varchar Estado
+  decimal CustoPortes
+  decimal Total
+}
+LINHAENCOMENDA {
+  int EncomendaId PK,FK
+  int ProdutoId PK,FK
+  int Quantidade
+  decimal PrecoUnitario
+}
+PAGAMENTO {
+  int PagamentoId PK
+  int EncomendaId FK,UK
+  varchar Metodo
+  decimal Valor
+  datetime DataPagamento
+  varchar Estado
+}
+AVALIACAO {
+  int AvaliacaoId PK
+  int ClienteId FK
+  int ProdutoId FK
+  tinyint Nota
+  varchar Comentario
+  datetime DataAvaliacao
+}
+CARRINHO {
+  int CarrinhoId PK
+  int ClienteId FK,UK
+  datetime DataCriacao
+}
+ITEMCARRINHO {
+  int CarrinhoId PK,FK
+  int ProdutoId PK,FK
+  int Quantidade
+  datetime DataAdicao
+}
+DEVOLUCAO {
+  int DevolucaoId PK
+  int EncomendaId FK
+  datetime DataDevolucao
+  varchar Motivo
+  varchar Estado
+}
+ITEMDEVOLUCAO {
+  int DevolucaoId PK,FK
+  int ProdutoId PK,FK
+  int Quantidade
+  varchar Motivo
+}
+</pre>
+<div class="legenda">Figura 7 — Diagrama ER (notação pé-de-galinha). PK: chave primária; FK: chave estrangeira; UK: chave única. Avaliacao tem ainda UNIQUE (ClienteId, ProdutoId).</div>
+
+<h3>3.2 Esquema relacional</h3>
+<p>Notação: <u>sublinhado</u> = chave primária; <code>#</code> = chave estrangeira (<code>#X &rarr; T.Y</code>); <code>?</code> = admite NULL.</p>
+<pre>
+Cliente        (<u>ClienteId</u>, Nome, Email, PasswordHash, NIF?, DataNascimento?, Telefone?, DataRegisto, Papel)
+                UNIQUE(Email); CHECK(Papel IN ('Cliente','Admin'))
+Morada         (<u>MoradaId</u>, #ClienteId -&gt; Cliente, Tipo, Rua, CodigoPostal, Cidade, Pais)
+Categoria      (<u>CategoriaId</u>, Nome, #CategoriaPaiId? -&gt; Categoria)
+Fornecedor     (<u>FornecedorId</u>, Nome, Email?, Telefone?)
+Produto        (<u>ProdutoId</u>, SKU, Nome, Descricao?, Preco, Stock, ImagemUrl?, Ativo,
+                #CategoriaId -&gt; Categoria, #FornecedorId? -&gt; Fornecedor)
+                UNIQUE(SKU); CHECK(Preco &gt; 0); CHECK(Stock &gt;= 0)
+Cupao          (<u>CupaoId</u>, Codigo, PercentagemDesconto, DataValidade, UsosMaximos, UsosAtuais)
+                UNIQUE(Codigo); CHECK(PercentagemDesconto BETWEEN 0 AND 100)
+Encomenda      (<u>EncomendaId</u>, #ClienteId -&gt; Cliente, #CupaoId? -&gt; Cupao, #MoradaEnvioId -&gt; Morada,
+                DataEncomenda, DataAtualizacao, Estado, CustoPortes, Total)
+                CHECK(Estado IN ('Pendente','Paga','Enviada','Entregue','Cancelada'))
+LinhaEncomenda (<u>#EncomendaId -&gt; Encomenda, #ProdutoId -&gt; Produto</u>, Quantidade, PrecoUnitario)
+                CHECK(Quantidade &gt; 0)
+Pagamento      (<u>PagamentoId</u>, #EncomendaId -&gt; Encomenda, Metodo, Valor, DataPagamento, Estado)
+                UNIQUE(EncomendaId); CHECK(Estado IN ('Pendente','Processado','Falhado','Reembolsado'))
+Avaliacao      (<u>AvaliacaoId</u>, #ClienteId -&gt; Cliente, #ProdutoId -&gt; Produto, Nota, Comentario?, DataAvaliacao)
+                UNIQUE(ClienteId, ProdutoId); CHECK(Nota BETWEEN 1 AND 5)
+Carrinho       (<u>CarrinhoId</u>, #ClienteId -&gt; Cliente, DataCriacao)
+                UNIQUE(ClienteId)
+ItemCarrinho   (<u>#CarrinhoId -&gt; Carrinho, #ProdutoId -&gt; Produto</u>, Quantidade, DataAdicao)
+                CHECK(Quantidade &gt; 0); FK CarrinhoId ON DELETE CASCADE
+Devolucao      (<u>DevolucaoId</u>, #EncomendaId -&gt; Encomenda, DataDevolucao, Motivo?, Estado)
+                CHECK(Estado IN ('Pedida','Aprovada','Recusada','Concluida'))
+ItemDevolucao  (<u>#DevolucaoId -&gt; Devolucao, #ProdutoId -&gt; Produto</u>, Quantidade, Motivo?)
+                CHECK(Quantidade &gt; 0); FK DevolucaoId ON DELETE CASCADE
+</pre>
+
+<h3>3.3 Justificação das decisões de modelação</h3>
+<ul>
+  <li><strong>Terceira forma normal (3FN).</strong> Todos os atributos não-chave dependem apenas da chave primária da sua tabela: os dados do cliente, da categoria, do fornecedor e do cupão estão em tabelas próprias e são referenciados por chave estrangeira, sem repetição; não há grupos repetidos (as linhas de encomenda estão numa tabela à parte) nem dependências transitivas (por exemplo, o nome da categoria não está em Produto).</li>
+  <li><strong>Chaves compostas em LinhaEncomenda, ItemCarrinho e ItemDevolucao.</strong> São tabelas de associação muitos-para-muitos entre (Encomenda | Carrinho | Devolucao) e Produto. A chave composta (pai, ProdutoId) impõe que um produto apareça no máximo uma vez por encomenda, carrinho ou devolução (sem linhas duplicadas) e dispensa uma chave artificial sem significado. Adicionar o mesmo produto outra vez ao carrinho soma à quantidade existente.</li>
+  <li><strong><code>PrecoUnitario</code> guardado na linha.</strong> O preço do produto pode mudar depois da compra; a linha guarda o preço no momento da compra para que o histórico e o total não se alterem. É uma cópia deliberada e controlada (histórico), não uma redundância acidental.</li>
+  <li><strong><code>Total</code> calculado por gatilho.</strong> <code>Encomenda.Total</code> é redundante (derivável das linhas, do cupão e dos portes) mas foi mantido para leitura rápida e relatórios; os gatilhos <code>trg_LinhaEncomenda_Total</code> e <code>trg_Encomenda_Total</code> usam a função <code>fn_TotalEncomenda</code> para o manter sempre coerente, e a aplicação não o calcula.</li>
+  <li><strong><code>Papel</code> em Cliente.</strong> Em vez de uma tabela Administrador separada, o administrador é um cliente com <code>Papel = 'Admin'</code> (CHECK com dois valores). Simplifica o login, que é único, e é suficiente para dois papéis.</li>
+  <li><strong><code>CategoriaPaiId</code>.</strong> Relação recursiva opcional que permite subcategorias (árvore de categorias) sem criar uma tabela por nível.</li>
+  <li><strong>Carrinho 1:1 com Cliente.</strong> <code>UNIQUE(ClienteId)</code> garante um único carrinho por cliente; é criado no registo.</li>
+  <li><strong>Pagamento 1:1 com Encomenda.</strong> <code>UNIQUE(EncomendaId)</code>: cada encomenda tem um pagamento, criado Pendente no checkout.</li>
+  <li><strong>Eliminação lógica de produtos.</strong> <code>Ativo = 0</code> em vez de DELETE, para não quebrar a integridade das linhas de encomenda históricas.</li>
+</ul>
+
+<h3>3.4 Restrições (CHECK, UNIQUE, FK)</h3>
+<p>Restrições acrescentadas ou garantidas pelo script <code>05_completar_modelo.sql</code> (nomes reais). As restrições originais das 9 primeiras tabelas (PK, FK, UNIQUE de SKU, de Email, de Código e de Pagamento.EncomendaId, e UNIQUE de Avaliacao) são as descritas em <code>BASE-DADOS.md</code>.</p>
+<table>
+<tr><th>Tabela</th><th>Restrição</th><th>Tipo</th><th>Regra</th></tr>
+<tr><td>Cliente</td><td>CK_Cliente_Papel</td><td>CHECK</td><td>Papel IN ('Cliente','Admin'); DEFAULT 'Cliente' (DF_Cliente_Papel)</td></tr>
+<tr><td>Cliente</td><td>UQ_Cliente_Email</td><td>UNIQUE</td><td>Email único (o script remove o UNIQUE duplicado gerado automaticamente)</td></tr>
+<tr><td>Produto</td><td>CK_Produto_Preco</td><td>CHECK</td><td>Preco &gt; 0</td></tr>
+<tr><td>Produto</td><td>CK_Produto_Stock</td><td>CHECK</td><td>Stock &gt;= 0 (a violação com stock insuficiente é o erro 547)</td></tr>
+<tr><td>Produto</td><td>FK_Produto_Fornecedor</td><td>FK</td><td>FornecedorId referencia Fornecedor (opcional)</td></tr>
+<tr><td>Cupao</td><td>CK_Cupao_Desconto</td><td>CHECK</td><td>PercentagemDesconto entre 0 e 100</td></tr>
+<tr><td>Cupao</td><td>UQ_Cupao_Codigo</td><td>UNIQUE</td><td>Código único (duplicado removido pelo script)</td></tr>
+<tr><td>Avaliacao</td><td>CK_Avaliacao_Nota</td><td>CHECK</td><td>Nota entre 1 e 5</td></tr>
+<tr><td>Encomenda</td><td>CK_Encomenda_Estado</td><td>CHECK</td><td>Estado IN ('Pendente','Paga','Enviada','Entregue','Cancelada')</td></tr>
+<tr><td>LinhaEncomenda</td><td>CK_LinhaEncomenda_Qtd</td><td>CHECK</td><td>Quantidade &gt; 0</td></tr>
+<tr><td>Pagamento</td><td>CK_Pagamento_Estado</td><td>CHECK</td><td>Estado IN ('Pendente','Processado','Falhado','Reembolsado')</td></tr>
+<tr><td>Carrinho</td><td>UQ_Carrinho_Cliente, FK_Carrinho_Cliente</td><td>UNIQUE, FK</td><td>Um carrinho por cliente; ClienteId referencia Cliente</td></tr>
+<tr><td>ItemCarrinho</td><td>PK_ItemCarrinho (CarrinhoId, ProdutoId)</td><td>PK composta</td><td>Um produto no máximo uma vez por carrinho</td></tr>
+<tr><td>ItemCarrinho</td><td>FK_ItemCarrinho_Carrinho, FK_ItemCarrinho_Produto</td><td>FK</td><td>Carrinho com ON DELETE CASCADE; Produto sem cascata</td></tr>
+<tr><td>ItemCarrinho</td><td>CK_ItemCarrinho_Qtd</td><td>CHECK</td><td>Quantidade &gt; 0</td></tr>
+<tr><td>Devolucao</td><td>FK_Devolucao_Encomenda</td><td>FK</td><td>EncomendaId referencia Encomenda</td></tr>
+<tr><td>Devolucao</td><td>CK_Devolucao_Estado</td><td>CHECK</td><td>Estado IN ('Pedida','Aprovada','Recusada','Concluida'); DEFAULT 'Pedida'</td></tr>
+<tr><td>ItemDevolucao</td><td>PK_ItemDevolucao (DevolucaoId, ProdutoId)</td><td>PK composta</td><td>Um produto no máximo uma vez por devolução</td></tr>
+<tr><td>ItemDevolucao</td><td>FK_ItemDevolucao_Devolucao, FK_ItemDevolucao_Produto</td><td>FK</td><td>Devolução com ON DELETE CASCADE</td></tr>
+<tr><td>ItemDevolucao</td><td>CK_ItemDevolucao_Qtd</td><td>CHECK</td><td>Quantidade &gt; 0</td></tr>
+<tr><td>Fornecedor</td><td>PK_Fornecedor</td><td>PK</td><td>Identity(1,1)</td></tr>
+</table>
+
+<h2 id="s4" class="page-break">4. Gatilhos e asserções <span class="peso">(10%)</span></h2>
+<p>A lógica de negócio que envolve várias tabelas está na base de dados, em <strong>8 gatilhos e 1 função</strong> (script <code>06_gatilhos.sql</code>, idempotente com <code>CREATE OR ALTER</code>). Todos são <em>set-based</em> (funcionam com várias linhas em <code>inserted</code>/<code>deleted</code>) e, quando recusam uma operação, fazem <code>ROLLBACK</code> e <code>THROW</code> com um número de erro que o Java distingue.</p>
+<table>
+<tr><th>Gatilho / função</th><th>Tabela</th><th>Evento</th><th>Erro</th></tr>
+<tr><td>fn_TotalEncomenda</td><td>(função)</td><td>chamada pelos gatilhos de Total</td><td>—</td></tr>
+<tr><td>trg_LinhaEncomenda_DescontaStock</td><td>LinhaEncomenda</td><td>AFTER INSERT</td><td>547 (CHECK do stock)</td></tr>
+<tr><td>trg_LinhaEncomenda_Total</td><td>LinhaEncomenda</td><td>AFTER INSERT, UPDATE, DELETE</td><td>—</td></tr>
+<tr><td>trg_Encomenda_Total</td><td>Encomenda</td><td>AFTER UPDATE</td><td>—</td></tr>
+<tr><td>trg_Encomenda_UsaCupao</td><td>Encomenda</td><td>AFTER INSERT</td><td>50002</td></tr>
+<tr><td>trg_Encomenda_Estado</td><td>Encomenda</td><td>AFTER UPDATE</td><td>50003, 50004</td></tr>
+<tr><td>trg_Encomenda_CancelaRepoeStock</td><td>Encomenda</td><td>AFTER UPDATE</td><td>—</td></tr>
+<tr><td>trg_Devolucao_SoEntregue</td><td>Devolucao</td><td>AFTER INSERT</td><td>50005</td></tr>
+<tr><td>trg_Devolucao_ReporStock</td><td>Devolucao</td><td>AFTER UPDATE</td><td>—</td></tr>
+</table>
+<p>Os testes referidos estão em <code>08_testes_gatilhos.sql</code>: cada um corre num batch próprio dentro de <code>BEGIN TRAN ... ROLLBACK</code> (não deixa dados), mostra o estado ANTES, executa a ação e mostra o DEPOIS (ou o erro esperado). Os resultados indicados abaixo são os <strong>resultados esperados</strong> definidos nos próprios testes.</p>
+
+<h3>4.1 fn_TotalEncomenda (função auxiliar)</h3>
+<ul>
+  <li><strong>Objetivo:</strong> calcular o total de uma encomenda num único sítio.</li>
+  <li><strong>Regra de negócio:</strong> Total = soma(Quantidade × PrecoUnitario) − desconto do cupão (%) + CustoPortes.</li>
+  <li><strong>Evento:</strong> não é gatilho; é chamada por <code>trg_LinhaEncomenda_Total</code> e <code>trg_Encomenda_Total</code>.</li>
+</ul>
+<pre>CREATE OR ALTER FUNCTION dbo.fn_TotalEncomenda (@EncomendaId INT)
+RETURNS DECIMAL(10,2)
+AS
+BEGIN
+    DECLARE @subtotal DECIMAL(12,2) =
+        (SELECT ISNULL(SUM(Quantidade * PrecoUnitario), 0)
+         FROM dbo.LinhaEncomenda
+         WHERE EncomendaId = @EncomendaId);
+
+    DECLARE @pct DECIMAL(5,2) =
+        (SELECT ISNULL(c.PercentagemDesconto, 0)
+         FROM dbo.Encomenda e
+         LEFT JOIN dbo.Cupao c ON c.CupaoId = e.CupaoId
+         WHERE e.EncomendaId = @EncomendaId);
+
+    DECLARE @portes DECIMAL(10,2) =
+        (SELECT CustoPortes FROM dbo.Encomenda WHERE EncomendaId = @EncomendaId);
+
+    RETURN ROUND(@subtotal * (1 - ISNULL(@pct, 0) / 100.0), 2) + ISNULL(@portes, 0);
+END;</pre>
+<p><strong>Teste:</strong> testes 3 e 4 (ver 4.3 e 4.4).</p>
+
+<h3>4.2 trg_LinhaEncomenda_DescontaStock</h3>
+<ul>
+  <li><strong>Objetivo:</strong> descontar o stock quando uma linha é inserida.</li>
+  <li><strong>Regra de negócio:</strong> vender N unidades reduz <code>Produto.Stock</code> em N; não se pode vender mais do que o stock (a CHECK <code>CK_Produto_Stock</code> falha e a transação do checkout é revertida).</li>
+  <li><strong>Evento:</strong> LinhaEncomenda, AFTER INSERT.</li>
+</ul>
+<pre>CREATE OR ALTER TRIGGER dbo.trg_LinhaEncomenda_DescontaStock
+ON dbo.LinhaEncomenda
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE p
+    SET p.Stock = p.Stock - x.Qtd
+    FROM dbo.Produto p
+    JOIN (SELECT ProdutoId, SUM(Quantidade) AS Qtd
+          FROM inserted
+          GROUP BY ProdutoId) x ON x.ProdutoId = p.ProdutoId;
+END;</pre>
+<p><strong>Teste 1 (desconto de stock):</strong> produto de teste com stock 10; insere linha com 3 unidades. Resultado esperado: <code>Stock = 7</code>.<br>
+<strong>Teste 2 (stock insuficiente):</strong> tenta vender 50 unidades com stock 10. Resultado esperado: erro 547 (CHECK <code>CK_Produto_Stock</code>) e nada fica gravado (o stock não muda).</p>
+
+<h3>4.3 trg_LinhaEncomenda_Total</h3>
+<ul>
+  <li><strong>Objetivo:</strong> manter <code>Encomenda.Total</code> atualizado quando as linhas mudam.</li>
+  <li><strong>Regra de negócio:</strong> o total é sempre derivado das linhas, do cupão e dos portes; a aplicação não o calcula.</li>
+  <li><strong>Evento:</strong> LinhaEncomenda, AFTER INSERT, UPDATE, DELETE.</li>
+</ul>
+<pre>CREATE OR ALTER TRIGGER dbo.trg_LinhaEncomenda_Total
+ON dbo.LinhaEncomenda
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE e
+    SET e.Total = dbo.fn_TotalEncomenda(e.EncomendaId)
+    FROM dbo.Encomenda e
+    WHERE e.EncomendaId IN (SELECT EncomendaId FROM inserted
+                            UNION
+                            SELECT EncomendaId FROM deleted);
+END;</pre>
+<p><strong>Teste 3 (total sem cupão nem portes):</strong> encomenda sem linhas (Total 0); insere 2 unidades a 100. Resultado esperado: <code>Total = 200</code>.</p>
+
+<h3>4.4 trg_Encomenda_Total</h3>
+<ul>
+  <li><strong>Objetivo:</strong> recalcular o total quando mudam o cupão ou os portes da encomenda.</li>
+  <li><strong>Regra de negócio:</strong> o total reflete sempre cupão e portes atuais; só recalcula se <code>CupaoId</code> ou <code>CustoPortes</code> mudaram (evita recursão).</li>
+  <li><strong>Evento:</strong> Encomenda, AFTER UPDATE.</li>
+</ul>
+<pre>CREATE OR ALTER TRIGGER dbo.trg_Encomenda_Total
+ON dbo.Encomenda
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- So recalcula se mudou o cupao ou os portes (evita recursao)
+    IF NOT (UPDATE(CupaoId) OR UPDATE(CustoPortes)) RETURN;
+
+    UPDATE e
+    SET e.Total = dbo.fn_TotalEncomenda(e.EncomendaId)
+    FROM dbo.Encomenda e
+    JOIN inserted i ON i.EncomendaId = e.EncomendaId;
+END;</pre>
+<p><strong>Teste 4 (total com cupão e portes):</strong> cupão de 10%, portes 5 e 2 unidades a 100. Resultado esperado: <code>Total = 185</code> (200 − 10% + 5). Depois de mudar os portes para 10, resultado esperado: <code>Total = 190</code>.</p>
+
+<h3>4.5 trg_Encomenda_UsaCupao</h3>
+<ul>
+  <li><strong>Objetivo:</strong> validar o cupão e contar a utilização ao criar a encomenda.</li>
+  <li><strong>Regra de negócio:</strong> um cupão só pode ser usado se não expirou (<code>DataValidade</code>) e se <code>UsosAtuais + 1 &le; UsosMaximos</code>; cada encomenda com cupão incrementa <code>UsosAtuais</code>.</li>
+  <li><strong>Evento:</strong> Encomenda, AFTER INSERT. Erro 50002.</li>
+</ul>
+<pre>CREATE OR ALTER TRIGGER dbo.trg_Encomenda_UsaCupao
+ON dbo.Encomenda
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (SELECT 1
+               FROM (SELECT CupaoId, COUNT(*) AS Usos
+                     FROM inserted
+                     WHERE CupaoId IS NOT NULL
+                     GROUP BY CupaoId) i
+               JOIN dbo.Cupao c ON c.CupaoId = i.CupaoId
+               WHERE c.DataValidade &lt; CAST(GETDATE() AS DATE)
+                  OR c.UsosAtuais + i.Usos &gt; c.UsosMaximos)
+    BEGIN
+        ROLLBACK TRANSACTION;
+        THROW 50002, 'Cupao expirado ou sem utilizacoes disponiveis.', 1;
+    END;
+
+    UPDATE c
+    SET c.UsosAtuais = c.UsosAtuais + i.Usos
+    FROM dbo.Cupao c
+    JOIN (SELECT CupaoId, COUNT(*) AS Usos
+          FROM inserted
+          WHERE CupaoId IS NOT NULL
+          GROUP BY CupaoId) i ON i.CupaoId = c.CupaoId;
+END;</pre>
+<p><strong>Teste 4:</strong> cupão com 5 usos máximos e 0 atuais; resultado esperado: <code>UsosAtuais = 1</code> depois da encomenda.<br>
+<strong>Teste 5 (cupão expirado):</strong> cupão que expirou ontem. Resultado esperado: erro 50002.<br>
+<strong>Teste 6 (cupão esgotado):</strong> cupão com 1 uso máximo e 1 atual. Resultado esperado: erro 50002.</p>
+
+<h3>4.6 trg_Encomenda_Estado</h3>
+<ul>
+  <li><strong>Objetivo:</strong> impor o ciclo de vida da encomenda e registar a data da última alteração.</li>
+  <li><strong>Regra de negócio:</strong> transições permitidas: Pendente para Paga ou Cancelada; Paga para Enviada ou Cancelada; Enviada para Entregue. Entregue e Cancelada são finais. Uma encomenda sem linhas não pode passar a Paga. <code>DataAtualizacao</code> é atualizada em cada mudança de estado.</li>
+  <li><strong>Evento:</strong> Encomenda, AFTER UPDATE. Erros 50003 (transição) e 50004 (sem linhas).</li>
+</ul>
+<pre>CREATE OR ALTER TRIGGER dbo.trg_Encomenda_Estado
+ON dbo.Encomenda
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT UPDATE(Estado) RETURN;
+
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        JOIN deleted d ON d.EncomendaId = i.EncomendaId
+        WHERE i.Estado &lt;&gt; d.Estado
+          AND NOT (   (d.Estado = 'Pendente' AND i.Estado IN ('Paga', 'Cancelada'))
+                   OR (d.Estado = 'Paga'     AND i.Estado IN ('Enviada', 'Cancelada'))
+                   OR (d.Estado = 'Enviada'  AND i.Estado = 'Entregue'))
+    )
+    BEGIN
+        ROLLBACK TRANSACTION;
+        THROW 50003, 'Transicao de estado da encomenda nao permitida.', 1;
+    END;
+
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        JOIN deleted d ON d.EncomendaId = i.EncomendaId
+        WHERE i.Estado = 'Paga' AND d.Estado &lt;&gt; 'Paga'
+          AND NOT EXISTS (SELECT 1 FROM dbo.LinhaEncomenda l
+                          WHERE l.EncomendaId = i.EncomendaId)
+    )
+    BEGIN
+        ROLLBACK TRANSACTION;
+        THROW 50004, 'Uma encomenda sem linhas nao pode ser paga.', 1;
+    END;
+
+    -- Este UPDATE nao altera Estado, por isso os gatilhos de Estado
+    -- regressam logo (IF NOT UPDATE(Estado) RETURN) mesmo que haja recursao.
+    UPDATE e
+    SET e.DataAtualizacao = GETDATE()
+    FROM dbo.Encomenda e
+    JOIN inserted i ON i.EncomendaId = e.EncomendaId
+    JOIN deleted  d ON d.EncomendaId = i.EncomendaId
+    WHERE i.Estado &lt;&gt; d.Estado;
+END;</pre>
+<p><strong>Teste 7 (transições válidas):</strong> Pendente, Paga, Enviada, Entregue sem erros. Resultado esperado: <code>Estado = Entregue</code>, com <code>DataAtualizacao</code> a acompanhar cada mudança.<br>
+<strong>Teste 8 (Pendente para Entregue):</strong> resultado esperado: erro 50003.<br>
+<strong>Teste 8b (Cancelada para Paga):</strong> resultado esperado: erro 50003.<br>
+<strong>Teste 9 (encomenda sem linhas para Paga):</strong> resultado esperado: erro 50004.</p>
+
+<h3>4.7 trg_Encomenda_CancelaRepoeStock</h3>
+<ul>
+  <li><strong>Objetivo:</strong> repor o stock quando uma encomenda é cancelada.</li>
+  <li><strong>Regra de negócio:</strong> ao passar de Pendente ou Paga a Cancelada, cada linha devolve a sua quantidade a <code>Produto.Stock</code>. Só atua nas transições válidas.</li>
+  <li><strong>Evento:</strong> Encomenda, AFTER UPDATE.</li>
+</ul>
+<pre>CREATE OR ALTER TRIGGER dbo.trg_Encomenda_CancelaRepoeStock
+ON dbo.Encomenda
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT UPDATE(Estado) RETURN;
+
+    UPDATE p
+    SET p.Stock = p.Stock + x.Qtd
+    FROM dbo.Produto p
+    JOIN (SELECT l.ProdutoId, SUM(l.Quantidade) AS Qtd
+          FROM dbo.LinhaEncomenda l
+          JOIN inserted i ON i.EncomendaId = l.EncomendaId
+          JOIN deleted  d ON d.EncomendaId = i.EncomendaId
+          WHERE i.Estado = 'Cancelada'
+            AND d.Estado IN ('Pendente', 'Paga')
+          GROUP BY l.ProdutoId) x ON x.ProdutoId = p.ProdutoId;
+END;</pre>
+<p><strong>Teste 10 (cancelamento repõe stock):</strong> stock 10, venda de 3 (stock 7), cancelamento. Resultado esperado: <code>Stock = 10</code> e <code>Estado = Cancelada</code>.</p>
+
+<h3>4.8 trg_Devolucao_SoEntregue</h3>
+<ul>
+  <li><strong>Objetivo:</strong> impedir devoluções de encomendas que o cliente ainda não recebeu.</li>
+  <li><strong>Regra de negócio:</strong> só é possível criar uma devolução se <code>Encomenda.Estado = 'Entregue'</code>.</li>
+  <li><strong>Evento:</strong> Devolucao, AFTER INSERT. Erro 50005.</li>
+</ul>
+<pre>CREATE OR ALTER TRIGGER dbo.trg_Devolucao_SoEntregue
+ON dbo.Devolucao
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (SELECT 1
+               FROM inserted i
+               JOIN dbo.Encomenda e ON e.EncomendaId = i.EncomendaId
+               WHERE e.Estado &lt;&gt; 'Entregue')
+    BEGIN
+        ROLLBACK TRANSACTION;
+        THROW 50005, 'So e possivel devolver encomendas entregues.', 1;
+    END;
+END;</pre>
+<p><strong>Teste 11 (devolução de encomenda Pendente):</strong> resultado esperado: erro 50005.</p>
+
+<h3>4.9 trg_Devolucao_ReporStock</h3>
+<ul>
+  <li><strong>Objetivo:</strong> repor o stock quando a devolução é concluída.</li>
+  <li><strong>Regra de negócio:</strong> o stock só volta quando o estado muda para Concluida (não em Pedida nem Aprovada); repõe a quantidade de cada <code>ItemDevolucao</code>. Não repõe duas vezes (só atua quando o estado anterior não era Concluida).</li>
+  <li><strong>Evento:</strong> Devolucao, AFTER UPDATE.</li>
+</ul>
+<pre>CREATE OR ALTER TRIGGER dbo.trg_Devolucao_ReporStock
+ON dbo.Devolucao
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT UPDATE(Estado) RETURN;
+
+    UPDATE p
+    SET p.Stock = p.Stock + x.Qtd
+    FROM dbo.Produto p
+    JOIN (SELECT idv.ProdutoId, SUM(idv.Quantidade) AS Qtd
+          FROM dbo.ItemDevolucao idv
+          JOIN inserted i ON i.DevolucaoId = idv.DevolucaoId
+          JOIN deleted  d ON d.DevolucaoId = i.DevolucaoId
+          WHERE i.Estado = 'Concluida'
+            AND d.Estado &lt;&gt; 'Concluida'
+          GROUP BY idv.ProdutoId) x ON x.ProdutoId = p.ProdutoId;
+END;</pre>
+<p><strong>Teste 12 (devolução concluída repõe stock):</strong> stock 10, venda de 3 (stock 7), devolução de 2 unidades. Resultado esperado: <code>Stock = 7</code> com a devolução Pedida, <code>Stock = 7</code> quando Aprovada e <code>Stock = 9</code> quando Concluida.</p>
+
+<h3>4.10 Asserções</h3>
+<p>O SQL Server <strong>não suporta</strong> <code>CREATE ASSERTION</code> (restrições declarativas entre várias tabelas, previstas no padrão SQL). Por isso o projeto usa duas técnicas equivalentes:</p>
+<ul>
+  <li><strong>Regras de domínio</strong> (uma só linha ou tabela): restrições <code>CHECK</code>.</li>
+  <li><strong>Regras entre tabelas</strong>: gatilhos <code>AFTER</code> que fazem ROLLBACK e THROW quando a regra é violada.</li>
+</ul>
+<table>
+<tr><th>Regra (asserção)</th><th>Mecanismo</th><th>Onde</th></tr>
+<tr><td>Preço de produto positivo</td><td>CHECK</td><td>CK_Produto_Preco</td></tr>
+<tr><td>Stock nunca negativo (impede vender sem stock)</td><td>CHECK + gatilho</td><td>CK_Produto_Stock; trg_LinhaEncomenda_DescontaStock</td></tr>
+<tr><td>Nota de avaliação entre 1 e 5</td><td>CHECK</td><td>CK_Avaliacao_Nota</td></tr>
+<tr><td>Desconto do cupão entre 0 e 100</td><td>CHECK</td><td>CK_Cupao_Desconto</td></tr>
+<tr><td>Quantidades positivas em linhas, itens de carrinho e de devolução</td><td>CHECK</td><td>CK_LinhaEncomenda_Qtd, CK_ItemCarrinho_Qtd, CK_ItemDevolucao_Qtd</td></tr>
+<tr><td>Estados válidos de Encomenda, Pagamento e Devolução</td><td>CHECK</td><td>CK_Encomenda_Estado, CK_Pagamento_Estado, CK_Devolucao_Estado</td></tr>
+<tr><td>Papel do utilizador é Cliente ou Admin</td><td>CHECK</td><td>CK_Cliente_Papel</td></tr>
+<tr><td>Cupão válido e com utilizações disponíveis ao encomendar</td><td>Gatilho</td><td>trg_Encomenda_UsaCupao (erro 50002)</td></tr>
+<tr><td>Transições de estado da encomenda permitidas</td><td>Gatilho</td><td>trg_Encomenda_Estado (erro 50003)</td></tr>
+<tr><td>Encomenda sem linhas não pode ser paga</td><td>Gatilho</td><td>trg_Encomenda_Estado (erro 50004)</td></tr>
+<tr><td>Só se devolvem encomendas entregues</td><td>Gatilho</td><td>trg_Devolucao_SoEntregue (erro 50005)</td></tr>
+<tr><td>Total da encomenda coerente com linhas, cupão e portes</td><td>Gatilhos + função</td><td>trg_LinhaEncomenda_Total, trg_Encomenda_Total, fn_TotalEncomenda</td></tr>
+<tr><td>Stock reposto ao cancelar ou ao concluir devolução</td><td>Gatilhos</td><td>trg_Encomenda_CancelaRepoeStock, trg_Devolucao_ReporStock</td></tr>
+</table>
+<div class="aviso">Regras que ficam na aplicação (não na base de dados): a quantidade devolvida não pode exceder a comprada (erro 400 no Java), a unicidade de avaliação por produto é garantida por UNIQUE e a ordem Pedida, Aprovada, Concluída da devolução não é validada por gatilho.</div>
+
+<h2 id="s5" class="page-break">5. Interrogações SQL à base de dados <span class="peso">(15%)</span></h2>
+<p>O script <code>07_consultas.sql</code> contém 31 consultas numeradas, agrupadas em sete partes. As consultas 26 a 31 são os <strong>seis relatórios expostos pelo backend</strong> em <code>GET /api/admin/relatorios/{nome}</code> (nomes: <code>vendas-produto</code>, <code>clientes-ativos</code>, <code>stock-baixo</code>, <code>top-produtos</code>, <code>media-avaliacoes</code>, <code>encomendas-pendentes</code>). As restantes servem para demonstrar a linguagem SQL (junções, agregações, subconsultas, atualizações e vistas).</p>
+
+<h3>5.1 Consultas básicas</h3>
+<h4>Q1 — Produtos ativos com categoria e fornecedor</h4>
+<p>Enunciado: listar os produtos ativos com o nome da categoria e do fornecedor (se existir). Devolve uma linha por produto ativo, ordenada por nome (JOIN e LEFT JOIN).</p>
+<pre>SELECT p.ProdutoId, p.SKU, p.Nome, c.Nome AS Categoria, f.Nome AS Fornecedor,
+       p.Preco, p.Stock
+FROM dbo.Produto p
+JOIN dbo.Categoria c       ON c.CategoriaId  = p.CategoriaId
+LEFT JOIN dbo.Fornecedor f ON f.FornecedorId = p.FornecedorId
+WHERE p.Ativo = 1
+ORDER BY p.Nome;</pre>
+<h4>Q2 — Clientes com email Gmail</h4>
+<p>Enunciado: clientes cujo email termina em @gmail.com. Devolve id, nome e email desses clientes (LIKE).</p>
+<pre>SELECT ClienteId, Nome, Email
+FROM dbo.Cliente
+WHERE Email LIKE '%@gmail.com';</pre>
+<h4>Q3 — Produtos cujo nome contém "cabo"</h4>
+<p>Enunciado: pesquisar produtos pelo nome parcial. Devolve id, SKU, nome e preço dos produtos que contêm a palavra (LIKE com pesquisa parcial).</p>
+<pre>SELECT ProdutoId, SKU, Nome, Preco
+FROM dbo.Produto
+WHERE Nome LIKE '%cabo%'
+ORDER BY Nome;</pre>
+<h4>Q4 — Categorias com a categoria-pai</h4>
+<p>Enunciado: listar cada categoria com o nome da categoria-pai. Devolve uma linha por categoria; a pai é NULL nas categorias de topo (auto-junção).</p>
+<pre>SELECT c.CategoriaId, c.Nome AS Categoria, pai.Nome AS CategoriaPai
+FROM dbo.Categoria c
+LEFT JOIN dbo.Categoria pai ON pai.CategoriaId = c.CategoriaPaiId
+ORDER BY pai.Nome, c.Nome;</pre>
+<h4>Q5 — Moradas de cada cliente</h4>
+<p>Enunciado: mostrar as moradas de cada cliente. Devolve uma linha por morada com o nome do cliente (JOIN Cliente e Morada).</p>
+<pre>SELECT c.Nome AS Cliente, m.Tipo, m.Rua, m.CodigoPostal, m.Cidade, m.Pais
+FROM dbo.Cliente c
+JOIN dbo.Morada m ON m.ClienteId = c.ClienteId
+ORDER BY c.Nome, m.Tipo;</pre>
+
+<h3>5.2 Agregações</h3>
+<h4>Q6 — Número de encomendas por cliente</h4>
+<p>Enunciado: contar as encomendas de cada cliente, incluindo quem não tem nenhuma. Devolve cliente e total, do maior para o menor (COUNT, LEFT JOIN, GROUP BY).</p>
+<pre>SELECT c.ClienteId, c.Nome, COUNT(e.EncomendaId) AS TotalEncomendas
+FROM dbo.Cliente c
+LEFT JOIN dbo.Encomenda e ON e.ClienteId = c.ClienteId
+GROUP BY c.ClienteId, c.Nome
+ORDER BY TotalEncomendas DESC, c.Nome;</pre>
+<h4>Q7 — Total gasto por cliente (mais de 100)</h4>
+<p>Enunciado: total gasto por cliente, sem encomendas canceladas, só para quem gastou mais de 100. Devolve cliente e total gasto (SUM, HAVING).</p>
+<pre>SELECT c.ClienteId, c.Nome, SUM(e.Total) AS TotalGasto
+FROM dbo.Cliente c
+JOIN dbo.Encomenda e ON e.ClienteId = c.ClienteId
+WHERE e.Estado &lt;&gt; 'Cancelada'
+GROUP BY c.ClienteId, c.Nome
+HAVING SUM(e.Total) &gt; 100
+ORDER BY TotalGasto DESC;</pre>
+<h4>Q8 — Média de avaliações por produto</h4>
+<p>Enunciado: média e número de avaliações de cada produto avaliado. Devolve produto, média das notas e contagem (AVG, COUNT, HAVING).</p>
+<pre>SELECT p.ProdutoId, p.Nome,
+       AVG(CAST(a.Nota AS DECIMAL(4,2))) AS MediaNotas,
+       COUNT(a.AvaliacaoId)              AS NumAvaliacoes
+FROM dbo.Produto p
+JOIN dbo.Avaliacao a ON a.ProdutoId = p.ProdutoId
+GROUP BY p.ProdutoId, p.Nome
+HAVING COUNT(a.AvaliacaoId) &gt;= 1
+ORDER BY MediaNotas DESC, p.Nome;</pre>
+<h4>Q9 — Encomendas e valor por estado</h4>
+<p>Enunciado: quantas encomendas e que valor total existe em cada estado. Devolve uma linha por estado (GROUP BY).</p>
+<pre>SELECT Estado, COUNT(*) AS NumEncomendas, SUM(Total) AS ValorTotal
+FROM dbo.Encomenda
+GROUP BY Estado
+ORDER BY NumEncomendas DESC;</pre>
+<h4>Q10 — Produtos e stock por categoria</h4>
+<p>Enunciado: número de produtos e stock total de cada categoria. Devolve uma linha por categoria, incluindo as vazias (COUNT, SUM, LEFT JOIN).</p>
+<pre>SELECT c.Nome AS Categoria, COUNT(p.ProdutoId) AS NumProdutos,
+       ISNULL(SUM(p.Stock), 0) AS StockTotal
+FROM dbo.Categoria c
+LEFT JOIN dbo.Produto p ON p.CategoriaId = c.CategoriaId
+GROUP BY c.Nome
+ORDER BY StockTotal DESC;</pre>
+
+<h3>5.3 Subconsultas</h3>
+<h4>Q11 — Clientes que nunca encomendaram</h4>
+<p>Enunciado: clientes sem nenhuma encomenda. Devolve id, nome e email desses clientes (NOT EXISTS).</p>
+<pre>SELECT c.ClienteId, c.Nome, c.Email
+FROM dbo.Cliente c
+WHERE NOT EXISTS (SELECT 1 FROM dbo.Encomenda e WHERE e.ClienteId = c.ClienteId);</pre>
+<h4>Q12 — Produtos mais caros do que a média</h4>
+<p>Enunciado: produtos com preço acima do preço médio. Devolve id, nome e preço, do mais caro para o mais barato (subconsulta escalar com AVG).</p>
+<pre>SELECT ProdutoId, Nome, Preco
+FROM dbo.Produto
+WHERE Preco &gt; (SELECT AVG(Preco) FROM dbo.Produto)
+ORDER BY Preco DESC;</pre>
+<h4>Q13 — Produtos nunca vendidos</h4>
+<p>Enunciado: produtos que nunca apareceram numa linha de encomenda. Devolve id, SKU, nome e stock (NOT EXISTS).</p>
+<pre>SELECT p.ProdutoId, p.SKU, p.Nome, p.Stock
+FROM dbo.Produto p
+WHERE NOT EXISTS (SELECT 1 FROM dbo.LinhaEncomenda l WHERE l.ProdutoId = p.ProdutoId);</pre>
+<h4>Q14 — Encomendas com pagamento pendente</h4>
+<p>Enunciado: encomendas cujo pagamento ainda está pendente. Devolve encomenda, cliente, total e estado do pagamento.</p>
+<pre>SELECT e.EncomendaId, c.Nome AS Cliente, e.Total, pg.Estado AS EstadoPagamento
+FROM dbo.Encomenda e
+JOIN dbo.Cliente   c  ON c.ClienteId    = e.ClienteId
+JOIN dbo.Pagamento pg ON pg.EncomendaId = e.EncomendaId
+WHERE pg.Estado = 'Pendente';</pre>
+<h4>Q15 — Clientes que gastam acima da média</h4>
+<p>Enunciado: clientes cujo total gasto excede a média dos totais das encomendas não canceladas. Devolve cliente e total gasto (HAVING com subconsulta).</p>
+<pre>SELECT c.ClienteId, c.Nome, SUM(e.Total) AS TotalGasto
+FROM dbo.Cliente c
+JOIN dbo.Encomenda e ON e.ClienteId = c.ClienteId
+WHERE e.Estado &lt;&gt; 'Cancelada'
+GROUP BY c.ClienteId, c.Nome
+HAVING SUM(e.Total) &gt; (SELECT AVG(Total) FROM dbo.Encomenda WHERE Estado &lt;&gt; 'Cancelada')
+ORDER BY TotalGasto DESC;</pre>
+
+<h3>5.4 Junções múltiplas</h3>
+<h4>Q16 — Detalhe completo de uma encomenda</h4>
+<p>Enunciado: cliente, linhas, morada, cupão e pagamento de uma encomenda (por omissão a mais recente). Devolve uma linha por linha de encomenda, com subtotais, portes, total, morada e pagamento (7 tabelas).</p>
+<pre>DECLARE @EncDetalhe INT = (SELECT TOP 1 EncomendaId FROM dbo.Encomenda ORDER BY EncomendaId DESC);
+
+SELECT e.EncomendaId, c.Nome AS Cliente, p.Nome AS Produto,
+       l.Quantidade, l.PrecoUnitario,
+       (l.Quantidade * l.PrecoUnitario) AS Subtotal,
+       cu.Codigo AS Cupao, cu.PercentagemDesconto,
+       e.CustoPortes, e.Total AS TotalEncomenda, e.Estado,
+       m.Rua, m.CodigoPostal, m.Cidade, m.Pais,
+       pg.Metodo AS MetodoPagamento, pg.Estado AS EstadoPagamento
+FROM dbo.Encomenda e
+JOIN dbo.Cliente c              ON c.ClienteId  = e.ClienteId
+JOIN dbo.Morada m               ON m.MoradaId   = e.MoradaEnvioId
+JOIN dbo.LinhaEncomenda l       ON l.EncomendaId = e.EncomendaId
+JOIN dbo.Produto p              ON p.ProdutoId  = l.ProdutoId
+LEFT JOIN dbo.Cupao cu          ON cu.CupaoId   = e.CupaoId
+LEFT JOIN dbo.Pagamento pg      ON pg.EncomendaId = e.EncomendaId
+WHERE e.EncomendaId = @EncDetalhe;</pre>
+<h4>Q17 — Devoluções com cliente, encomenda e produtos</h4>
+<p>Enunciado: listar as devoluções com quem as pediu e os produtos devolvidos. Devolve uma linha por item devolvido.</p>
+<pre>SELECT d.DevolucaoId, d.Estado AS EstadoDevolucao, d.DataDevolucao,
+       c.Nome AS Cliente, e.EncomendaId, p.Nome AS Produto, idv.Quantidade
+FROM dbo.Devolucao d
+JOIN dbo.Encomenda e        ON e.EncomendaId  = d.EncomendaId
+JOIN dbo.Cliente c          ON c.ClienteId    = e.ClienteId
+JOIN dbo.ItemDevolucao idv  ON idv.DevolucaoId = d.DevolucaoId
+JOIN dbo.Produto p          ON p.ProdutoId    = idv.ProdutoId
+ORDER BY d.DevolucaoId;</pre>
+<h4>Q18 — Conteúdo dos carrinhos</h4>
+<p>Enunciado: ver o que cada cliente tem no carrinho. Devolve cliente, produto, quantidade e subtotal (preço atual do produto).</p>
+<pre>SELECT c.Nome AS Cliente, p.Nome AS Produto, ic.Quantidade,
+       (ic.Quantidade * p.Preco) AS Subtotal
+FROM dbo.Carrinho ca
+JOIN dbo.Cliente c        ON c.ClienteId   = ca.ClienteId
+JOIN dbo.ItemCarrinho ic  ON ic.CarrinhoId = ca.CarrinhoId
+JOIN dbo.Produto p        ON p.ProdutoId   = ic.ProdutoId
+ORDER BY c.Nome, p.Nome;</pre>
+
+<h3>5.5 Atualizações</h3>
+<p>Os UPDATE estão dentro de <code>BEGIN TRAN ... ROLLBACK</code> (não alteram dados); trocar por <code>COMMIT</code> para aplicar.</p>
+<h4>Q19 — Cancelar encomendas pendentes com mais de 30 dias</h4>
+<p>Enunciado: cancelar as encomendas pendentes antigas. Devolve o número de encomendas canceladas; o gatilho <code>trg_Encomenda_CancelaRepoeStock</code> repõe o stock.</p>
+<pre>BEGIN TRAN;
+    UPDATE dbo.Encomenda
+    SET Estado = 'Cancelada'
+    WHERE Estado = 'Pendente'
+      AND DataEncomenda &lt; DATEADD(DAY, -30, CAST(GETDATE() AS DATE));
+    SELECT @@ROWCOUNT AS EncomendasCanceladas;
+ROLLBACK TRAN;   -- trocar por COMMIT TRAN para aplicar</pre>
+<h4>Q20 — Aumentar 10% ao preço dos produtos de uma categoria</h4>
+<p>Enunciado: ajustar o preço de uma categoria. Devolve o número de produtos atualizados.</p>
+<pre>BEGIN TRAN;
+    DECLARE @Cat INT = (SELECT TOP 1 CategoriaId FROM dbo.Categoria ORDER BY CategoriaId);
+    UPDATE dbo.Produto
+    SET Preco = ROUND(Preco * 1.10, 2)
+    WHERE CategoriaId = @Cat;
+    SELECT @@ROWCOUNT AS ProdutosAtualizados;
+ROLLBACK TRAN;   -- trocar por COMMIT TRAN para aplicar</pre>
+<h4>Q21 — Desconto de 5% em produtos com stock elevado</h4>
+<p>Enunciado: baixar o preço dos produtos com mais de 100 unidades. Devolve o número de produtos atualizados.</p>
+<pre>BEGIN TRAN;
+    UPDATE dbo.Produto
+    SET Preco = ROUND(Preco * 0.95, 2)
+    WHERE Stock &gt; 100;
+    SELECT @@ROWCOUNT AS ProdutosAtualizados;
+ROLLBACK TRAN;   -- trocar por COMMIT TRAN para aplicar</pre>
+<h4>Q22 — Desativar produtos sem stock</h4>
+<p>Enunciado: desativar produtos com stock zero. Devolve o número de produtos desativados.</p>
+<pre>BEGIN TRAN;
+    UPDATE dbo.Produto
+    SET Ativo = 0
+    WHERE Stock = 0 AND Ativo = 1;
+    SELECT @@ROWCOUNT AS ProdutosDesativados;
+ROLLBACK TRAN;   -- trocar por COMMIT TRAN para aplicar</pre>
+
+<h3>5.6 Vistas</h3>
+<h4>Q23 — vw_VendasProduto</h4>
+<p>Enunciado: vendas por produto sem contar encomendas canceladas. A vista devolve unidades vendidas e receita por produto.</p>
+<pre>CREATE OR ALTER VIEW dbo.vw_VendasProduto AS
+SELECT p.ProdutoId, p.Nome,
+       SUM(l.Quantidade)                   AS TotalVendido,
+       SUM(l.Quantidade * l.PrecoUnitario) AS Receita
+FROM dbo.Produto p
+JOIN dbo.LinhaEncomenda l ON l.ProdutoId   = p.ProdutoId
+JOIN dbo.Encomenda      e ON e.EncomendaId = l.EncomendaId
+WHERE e.Estado &lt;&gt; 'Cancelada'
+GROUP BY p.ProdutoId, p.Nome;</pre>
+<h4>Q24 — vw_ClientesAtivos</h4>
+<p>Enunciado: clientes com pelo menos uma encomenda. A vista devolve número de encomendas e total gasto por cliente.</p>
+<pre>CREATE OR ALTER VIEW dbo.vw_ClientesAtivos AS
+SELECT c.ClienteId, c.Nome, c.Email,
+       COUNT(e.EncomendaId) AS NumEncomendas,
+       SUM(e.Total)         AS TotalGasto
+FROM dbo.Cliente c
+JOIN dbo.Encomenda e ON e.ClienteId = c.ClienteId
+GROUP BY c.ClienteId, c.Nome, c.Email;</pre>
+<h4>Q25 — vw_StockBaixo</h4>
+<p>Enunciado: produtos com menos de 10 unidades. A vista devolve id, SKU, nome e stock.</p>
+<pre>CREATE OR ALTER VIEW dbo.vw_StockBaixo AS
+SELECT ProdutoId, SKU, Nome, Stock
+FROM dbo.Produto
+WHERE Stock &lt; 10;</pre>
+
+<h3>5.7 Relatórios expostos pelo backend</h3>
+<p>Estes seis relatórios são usados pelo backend (rota de administração <code>GET /api/admin/relatorios/{nome}</code>).</p>
+<h4>Q26 — Relatório <code>vendas-produto</code></h4>
+<p>Enunciado: receita e unidades por produto. Devolve as linhas da vista <code>vw_VendasProduto</code> ordenadas por receita decrescente.</p>
+<pre>SELECT ProdutoId, Nome, TotalVendido, Receita
+FROM dbo.vw_VendasProduto
+ORDER BY Receita DESC;</pre>
+<h4>Q27 — Relatório <code>clientes-ativos</code></h4>
+<p>Enunciado: clientes que já compraram. Devolve as linhas de <code>vw_ClientesAtivos</code> ordenadas pelo total gasto.</p>
+<pre>SELECT ClienteId, Nome, Email, NumEncomendas, TotalGasto
+FROM dbo.vw_ClientesAtivos
+ORDER BY TotalGasto DESC;</pre>
+<h4>Q28 — Relatório <code>stock-baixo</code></h4>
+<p>Enunciado: produtos a repor. Devolve as linhas de <code>vw_StockBaixo</code>, do menor stock para o maior.</p>
+<pre>SELECT ProdutoId, SKU, Nome, Stock
+FROM dbo.vw_StockBaixo
+ORDER BY Stock, Nome;</pre>
+<h4>Q29 — Relatório <code>top-produtos</code></h4>
+<p>Enunciado: os 5 produtos mais vendidos. Devolve produto e quantidade vendida, sem encomendas canceladas.</p>
+<pre>SELECT TOP 5 p.ProdutoId, p.Nome, SUM(l.Quantidade) AS TotalVendido
+FROM dbo.Produto p
+JOIN dbo.LinhaEncomenda l ON l.ProdutoId   = p.ProdutoId
+JOIN dbo.Encomenda e      ON e.EncomendaId = l.EncomendaId
+WHERE e.Estado &lt;&gt; 'Cancelada'
+GROUP BY p.ProdutoId, p.Nome
+ORDER BY TotalVendido DESC, p.Nome;</pre>
+<h4>Q30 — Relatório <code>media-avaliacoes</code></h4>
+<p>Enunciado: qualidade percebida dos produtos. Devolve média das notas e número de avaliações por produto.</p>
+<pre>SELECT p.ProdutoId, p.Nome,
+       AVG(CAST(a.Nota AS DECIMAL(4,2))) AS MediaNotas,
+       COUNT(a.AvaliacaoId)              AS NumAvaliacoes
+FROM dbo.Produto p
+JOIN dbo.Avaliacao a ON a.ProdutoId = p.ProdutoId
+GROUP BY p.ProdutoId, p.Nome
+ORDER BY MediaNotas DESC, p.Nome;</pre>
+<h4>Q31 — Relatório <code>encomendas-pendentes</code></h4>
+<p>Enunciado: encomendas por pagar. Devolve encomenda, cliente, data e total, das mais antigas para as mais recentes.</p>
+<pre>SELECT e.EncomendaId, c.Nome AS Cliente, e.DataEncomenda, e.Total
+FROM dbo.Encomenda e
+JOIN dbo.Cliente c ON c.ClienteId = e.ClienteId
+WHERE e.Estado = 'Pendente'
+ORDER BY e.DataEncomenda;</pre>
+<p>Além dos relatórios, o backend executa os seus próprios SELECT/INSERT/UPDATE com <code>JdbcTemplate</code> (produtos, carrinho, encomendas, devoluções, <code>/api/admin/resumo</code> e <code>/api/admin/clientes</code>), todos com parâmetros.</p>
+
+<h2 id="s6" class="page-break">6. Interfaces gráficas <span class="peso">(10%)</span></h2>
+<p>O frontend é composto por páginas HTML/CSS/JavaScript servidas pelo Node/Express (porta 3000). As páginas chamam a API com <code>fetch('/api/...')</code>; o Express reencaminha tudo o que começa por <code>/api</code> para o Spring Boot (porta 8080), por isso o cookie de sessão <code>JSESSIONID</code> circula na mesma origem. A sessão guarda <code>{ id, nome, email, isAdmin }</code>; o campo <code>isAdmin</code> permite ao frontend mostrar as páginas de administração.</p>
+<div class="aviso">O mapeamento página-endpoint abaixo segue o contrato definido em <code>API.md</code> e as rotas de <code>server.js</code>.</div>
+
+<h3>6.1 Páginas e endpoints</h3>
+<table>
+<tr><th>Página</th><th>URL (Express)</th><th>Utilizador</th><th>Endpoints usados</th></tr>
+<tr><td>Início</td><td><code>/</code></td><td>Todos</td><td>GET <code>/api/produtos</code>, GET <code>/api/categorias</code></td></tr>
+<tr><td>Produtos</td><td><code>/produtos</code></td><td>Todos</td><td>GET <code>/api/produtos?categoria=&amp;q=&amp;ordenar=</code>, GET <code>/api/categorias</code>, POST <code>/api/carrinho</code></td></tr>
+<tr><td>Detalhe do produto</td><td><code>/produto/:id</code></td><td>Todos (avaliar: cliente)</td><td>GET <code>/api/produtos/{id}</code>, GET e POST <code>/api/produtos/{id}/avaliacoes</code>, POST <code>/api/carrinho</code></td></tr>
+<tr><td>Carrinho</td><td><code>/carrinho</code></td><td>Cliente</td><td>GET <code>/api/carrinho</code>, PUT e DELETE <code>/api/carrinho/{produtoId}</code></td></tr>
+<tr><td>Checkout</td><td><code>/checkout</code></td><td>Cliente</td><td>GET <code>/api/moradas</code>, POST <code>/api/moradas</code>, POST <code>/api/encomendas</code>, POST <code>/api/encomendas/{id}/pagar</code></td></tr>
+<tr><td>Login</td><td><code>/login</code></td><td>Visitante</td><td>POST <code>/api/login</code>, GET <code>/api/usuario/atual</code></td></tr>
+<tr><td>Registo (cadastro)</td><td><code>/cadastro</code></td><td>Visitante</td><td>POST <code>/api/cadastro</code></td></tr>
+<tr><td>As minhas encomendas</td><td><code>/encomendas</code></td><td>Cliente</td><td>GET <code>/api/encomendas</code>, POST <code>/api/encomendas/{id}/pagar</code>, POST <code>/api/encomendas/{id}/cancelar</code>, GET e POST <code>/api/devolucoes</code></td></tr>
+<tr><td>Painel de administração</td><td><code>/admin</code></td><td>Admin</td><td>GET <code>/api/admin/resumo</code>, GET <code>/api/admin/relatorios/{nome}</code>, GET <code>/api/admin/clientes</code></td></tr>
+<tr><td>Admin: produtos</td><td><code>/admin/produtos</code></td><td>Admin</td><td>GET, POST <code>/api/admin/produtos</code>, PUT, DELETE <code>/api/admin/produtos/{id}</code></td></tr>
+<tr><td>Admin: encomendas</td><td><code>/admin/encomendas</code></td><td>Admin</td><td>GET <code>/api/admin/encomendas?estado=</code>, PUT <code>/api/admin/encomendas/{id}/estado</code>; devoluções: GET <code>/api/admin/devolucoes</code>, PUT <code>/api/admin/devolucoes/{id}/estado</code></td></tr>
+<tr><td>Terminar sessão</td><td>(botão no cabeçalho)</td><td>Cliente, Admin</td><td>POST <code>/api/logout</code></td></tr>
+</table>
+
+<h3>6.2 Resumo da API usada pelas interfaces</h3>
+<table>
+<tr><th>Grupo</th><th>Método e rota</th><th>Acesso</th><th>Função</th></tr>
+<tr><td>Produtos</td><td>GET <code>/api/produtos</code>, <code>/api/produtos/{id}</code>, <code>/api/categorias</code></td><td>Público</td><td>Catálogo, filtros, detalhe</td></tr>
+<tr><td>Avaliações</td><td>GET, POST <code>/api/produtos/{id}/avaliacoes</code></td><td>GET público; POST login</td><td>Ler e escrever avaliações (409 se repetida)</td></tr>
+<tr><td>Autenticação</td><td>POST <code>/api/cadastro</code>, <code>/api/login</code>, <code>/api/logout</code>; GET <code>/api/usuario/atual</code></td><td>Público / sessão</td><td>Registo, entrada, saída, utilizador atual</td></tr>
+<tr><td>Carrinho</td><td>GET, POST <code>/api/carrinho</code>; PUT, DELETE <code>/api/carrinho/{produtoId}</code></td><td>Login</td><td>Gerir itens do carrinho</td></tr>
+<tr><td>Moradas</td><td>GET, POST <code>/api/moradas</code></td><td>Login</td><td>Moradas de envio</td></tr>
+<tr><td>Encomendas</td><td>POST, GET <code>/api/encomendas</code>; GET <code>/api/encomendas/{id}</code>; POST <code>.../pagar</code>, <code>.../cancelar</code></td><td>Login</td><td>Checkout transacional, histórico, pagamento e cancelamento</td></tr>
+<tr><td>Devoluções</td><td>POST, GET <code>/api/devolucoes</code></td><td>Login</td><td>Pedir e consultar devoluções</td></tr>
+<tr><td>Administração</td><td><code>/api/admin/produtos</code>, <code>/encomendas</code>, <code>/devolucoes</code>, <code>/clientes</code>, <code>/relatorios/{nome}</code>, <code>/resumo</code></td><td>Papel Admin</td><td>Gestão e relatórios</td></tr>
+<tr><td>Saúde</td><td>GET <code>/api/health</code></td><td>Público</td><td>Verifica o backend e a BD (14 tabelas)</td></tr>
+</table>
+
+<h3>6.3 Fluxos</h3>
+<h4>Fluxo do cliente</h4>
+<ol>
+  <li>Abre <code>/produtos</code>, filtra por categoria ou pesquisa por texto e abre um produto.</li>
+  <li>Sem sessão, o botão de comprar leva a <code>/login</code> (ou <code>/cadastro</code> para criar conta).</li>
+  <li>Adiciona produtos ao carrinho e revê quantidades em <code>/carrinho</code>.</li>
+  <li>Em <code>/checkout</code> escolhe (ou cria) a morada, o método de pagamento e, opcionalmente, o cupão, e confirma: é criada a encomenda Pendente.</li>
+  <li>Paga a encomenda (passa a Paga) ou cancela-a.</li>
+  <li>Em <code>/encomendas</code> acompanha o estado (Pendente, Paga, Enviada, Entregue, Cancelada); quando Entregue pode pedir uma devolução.</li>
+</ol>
+<h4>Fluxo do administrador</h4>
+<ol>
+  <li>Inicia sessão com uma conta de papel Admin e abre <code>/admin</code> (resumo e relatórios).</li>
+  <li>Em <code>/admin/produtos</code> cria, edita ou desativa produtos.</li>
+  <li>Em <code>/admin/encomendas</code> marca as encomendas pagas como Enviada e depois Entregue; transições inválidas são recusadas pelo gatilho (erro mostrado ao utilizador).</li>
+  <li>Aprova, recusa ou conclui devoluções (a conclusão repõe o stock).</li>
+</ol>
+
+<h3>6.4 Capturas de ecrã</h3>
+<div class="captura">[inserir captura de ecrã] — Início / Produtos (<code>/produtos</code>)</div>
+<div class="captura">[inserir captura de ecrã] — Detalhe do produto (<code>/produto/:id</code>)</div>
+<div class="captura">[inserir captura de ecrã] — Carrinho (<code>/carrinho</code>)</div>
+<div class="captura">[inserir captura de ecrã] — Checkout (<code>/checkout</code>)</div>
+<div class="captura">[inserir captura de ecrã] — Login (<code>/login</code>)</div>
+<div class="captura">[inserir captura de ecrã] — Registo (<code>/cadastro</code>)</div>
+<div class="captura">[inserir captura de ecrã] — As minhas encomendas (<code>/encomendas</code>)</div>
+<div class="captura">[inserir captura de ecrã] — Painel de administração (<code>/admin</code>)</div>
+<div class="captura">[inserir captura de ecrã] — Admin: produtos (<code>/admin/produtos</code>)</div>
+<div class="captura">[inserir captura de ecrã] — Admin: encomendas (<code>/admin/encomendas</code>)</div>
+
+<h2 id="s7" class="page-break">7. Arquitetura e guião da defesa oral <span class="peso">(30%)</span></h2>
+
+<h3>7.1 Diagrama de deployment</h3>
+<pre class="mermaid">
+flowchart LR
+B["Browser do utilizador<br/>HTML, CSS, JavaScript"] -->|"HTTP :3000"| N["Node.js e Express :3000<br/>ficheiros estáticos e proxy de /api"]
+N -->|"HTTP /api :8080"| S["Spring Boot :8080<br/>REST, sessão, JdbcTemplate"]
+S -->|"JDBC :1433"| Q[("SQL Server :1433<br/>EcommerceDB: 14 tabelas,<br/>gatilhos e vistas")]
+</pre>
+<div class="legenda">Figura 8 — Deployment em localhost. O browser só fala com a porta 3000.</div>
+<p>O browser pede páginas e <code>/api/...</code> à porta 3000. O Express serve as páginas estáticas e reencaminha o prefixo <code>/api</code> para o Spring Boot (cookie de sessão incluído). O Spring Boot acede ao SQL Server por JDBC; a base de dados aplica as restrições e os gatilhos.</p>
+
+<h3>7.2 Diagrama de componentes (backend)</h3>
+<pre class="mermaid">
+flowchart TB
+FE["Frontend Node e Express<br/>proxy de /api"] --> SEG
+subgraph BE["Backend Spring Boot"]
+  SEG["Configuração e sessão<br/>interceptor: 401 sem sessão, 403 sem Admin"]
+  AUT["Autenticação<br/>cadastro, login, logout, BCrypt"]
+  PRO["Produtos e avaliações<br/>catálogo, categorias, avaliações"]
+  CAR["Carrinho e moradas"]
+  ENC["Encomendas e pagamentos<br/>checkout transacional, pagar, cancelar"]
+  DEV["Devoluções"]
+  ADM["Administração e relatórios<br/>produtos, estados, resumo, relatórios"]
+  REP["Repositórios JdbcTemplate<br/>SQL escrito à mão"]
+  ERR["Tratamento de erros<br/>erros SQL 547 e 50002 a 50005 para HTTP 400 ou 409"]
+end
+SEG --> AUT
+SEG --> PRO
+SEG --> CAR
+SEG --> ENC
+SEG --> DEV
+SEG --> ADM
+AUT --> REP
+PRO --> REP
+CAR --> REP
+ENC --> REP
+DEV --> REP
+ADM --> REP
+ENC -.-> ERR
+DEV -.-> ERR
+ADM -.-> ERR
+REP --> DB[("SQL Server EcommerceDB<br/>tabelas, gatilhos, vistas")]
+</pre>
+<div class="legenda">Figura 9 — Componentes do backend. As linhas a tracejado indicam a conversão de erros SQL em respostas HTTP.</div>
+<table>
+<tr><th>Módulo</th><th>Responsabilidade</th><th>Tabelas</th></tr>
+<tr><td>Configuração e sessão</td><td>Sessão HTTP, controlo de acesso (401/403), configuração web</td><td>—</td></tr>
+<tr><td>Autenticação</td><td>Registo (cria Carrinho), login com BCrypt, logout, utilizador atual</td><td>Cliente, Carrinho</td></tr>
+<tr><td>Produtos e avaliações</td><td>Catálogo, filtros, categorias, avaliações</td><td>Produto, Categoria, Fornecedor, Avaliacao</td></tr>
+<tr><td>Carrinho e moradas</td><td>Itens do carrinho e moradas de envio</td><td>Carrinho, ItemCarrinho, Morada</td></tr>
+<tr><td>Encomendas e pagamentos</td><td>Checkout transacional, pagar, cancelar, histórico</td><td>Encomenda, LinhaEncomenda, Pagamento, Cupao</td></tr>
+<tr><td>Devoluções</td><td>Pedir e consultar devoluções</td><td>Devolucao, ItemDevolucao</td></tr>
+<tr><td>Administração e relatórios</td><td>Gestão de produtos, encomendas, devoluções, clientes, resumo, 6 relatórios</td><td>Todas (vistas vw_*)</td></tr>
+</table>
+
+<h3>7.3 Divisão de responsabilidades</h3>
+<table>
+<tr><th>Camada</th><th>Faz</th><th>Não faz</th></tr>
+<tr><td>SQL Server (gatilhos, CHECK, FK)</td><td>Desconta e repõe stock; calcula o Total; valida cupões; valida transições de estado; só devolve encomendas entregues</td><td>Autenticação e sessões</td></tr>
+<tr><td>Spring Boot</td><td>Sessão e permissões, hash BCrypt, transações (checkout, pagamento, cancelamento), preço atual em <code>PrecoUnitario</code>, portes, conversão de erros SQL em HTTP</td><td>Descontar/repor stock; calcular o Total</td></tr>
+<tr><td>Node/Express</td><td>Servir páginas e proxy de <code>/api</code></td><td>Lógica de negócio</td></tr>
+</table>
+
+<h3>7.4 Guião de demonstração</h3>
+<p>Sequência sugerida (cerca de 10 a 12 minutos). Ter o SSMS aberto em <code>EcommerceDB</code>, com os scripts <code>06</code>, <code>07</code> e <code>08</code> abertos em separadores.</p>
+<ol>
+  <li><strong>Arranque.</strong> Mostrar a SQL Server a correr, o backend (<code>npm run start</code> na pasta backend arranca o Spring Boot) e o frontend (porta 3000). Abrir <code>http://localhost:3000/api/health</code>: deve devolver <code>bd: true</code> e <code>tabelas: 14</code>.</li>
+  <li><strong>Registar.</strong> Em <code>/cadastro</code> criar um cliente. <em>SSMS:</em> <code>SELECT * FROM Cliente</code> (ver <code>PasswordHash</code> em BCrypt, começa por <code>$2</code>) e <code>SELECT * FROM Carrinho</code> (carrinho criado).</li>
+  <li><strong>Login.</strong> Em <code>/login</code> entrar; mostrar que o cabeçalho passa a mostrar o utilizador.</li>
+  <li><strong>Adicionar ao carrinho.</strong> Em <code>/produtos</code> escolher um produto e adicioná-lo duas vezes (a quantidade soma). <em>SSMS:</em> consulta Q18 (conteúdo dos carrinhos) e mostrar a chave composta de <code>ItemCarrinho</code>.</li>
+  <li><strong>Checkout.</strong> Em <code>/checkout</code> escolher a morada e o método de pagamento (opcionalmente um cupão). <em>SSMS, antes de confirmar:</em> anotar <code>Produto.Stock</code>. <em>Depois:</em> consulta Q16 (detalhe da encomenda) e confirmar que o stock desceu (gatilho <code>trg_LinhaEncomenda_DescontaStock</code>), que o <code>Total</code> foi calculado (<code>trg_LinhaEncomenda_Total</code>) e que o carrinho ficou vazio; encomenda Pendente e pagamento Pendente.</li>
+  <li><strong>Pagar.</strong> Pagar a encomenda. <em>SSMS:</em> <code>SELECT Estado, DataAtualizacao FROM Encomenda</code> e <code>SELECT Estado FROM Pagamento</code> (Paga e Processado).</li>
+  <li><strong>Admin marca Enviada.</strong> Iniciar sessão com um administrador (<code>UPDATE Cliente SET Papel = 'Admin' ...</code>), abrir <code>/admin/encomendas</code> e marcar Enviada.</li>
+  <li><strong>Mostrar um erro de gatilho.</strong> Tentar saltar um estado (por exemplo, passar de Enviada a Cancelada, ou outra transição inválida): resposta 409. <em>SSMS:</em> correr o teste 8 de <code>08_testes_gatilhos.sql</code> (erro 50003).</li>
+  <li><strong>Admin marca Entregue.</strong> Marcar Entregue; <code>DataAtualizacao</code> muda.</li>
+  <li><strong>Devolução.</strong> Como cliente, em <code>/encomendas</code> pedir a devolução de um item. Como admin, aprovar e concluir. <em>SSMS:</em> mostrar o stock antes e depois de Concluida (gatilho <code>trg_Devolucao_ReporStock</code>) e correr o teste 12.</li>
+  <li><strong>Relatórios.</strong> No painel <code>/admin</code> abrir os relatórios (vendas por produto, top produtos, stock baixo, ...). <em>SSMS:</em> consultas Q26 a Q31 e as vistas <code>vw_VendasProduto</code>, <code>vw_ClientesAtivos</code> e <code>vw_StockBaixo</code>.</li>
+  <li><strong>Gatilhos em bloco (opcional).</strong> Correr <code>08_testes_gatilhos.sql</code> completo: cada teste faz ROLLBACK e não deixa dados.</li>
+</ol>
+<div class="aviso">Se uma etapa falhar durante a demonstração, voltar a correr o teste correspondente no SSMS: demonstra a mesma regra sem depender da interface.</div>
+
+<h3>7.5 Perguntas prováveis da defesa</h3>
+<dl class="qa">
+<dt>Porque usar chaves compostas em LinhaEncomenda, ItemCarrinho e ItemDevolucao?</dt>
+<dd>São tabelas de associação entre uma encomenda (ou carrinho, ou devolução) e um produto. A chave (pai, ProdutoId) garante que um produto aparece no máximo uma vez e identifica a linha de forma natural, sem uma chave artificial. A aplicação soma quantidades em vez de duplicar linhas.</dd>
+<dt>Onde está a lógica de stock?</dt>
+<dd>Na base de dados: <code>trg_LinhaEncomenda_DescontaStock</code> desconta ao inserir a linha, <code>trg_Encomenda_CancelaRepoeStock</code> repõe ao cancelar e <code>trg_Devolucao_ReporStock</code> repõe ao concluir a devolução. A CHECK <code>CK_Produto_Stock</code> (Stock &gt;= 0) impede stock negativo. O Java não mexe no stock.</dd>
+<dt>O que acontece se dois clientes comprarem o último produto?</dt>
+<dd>Cada compra corre numa transação. O UPDATE do gatilho bloqueia a linha do produto: a primeira transação desconta (stock 0) e só liberta o bloqueio no COMMIT; a segunda espera, lê o stock já atualizado e tenta pôr -1, o que viola a CHECK (erro 547). A segunda transação é revertida e o cliente recebe 409 (stock insuficiente). Nunca se vende mais do que existe.</dd>
+<dt>Porque BCrypt?</dt>
+<dd>É uma função de hash lenta e com sal aleatório incorporado, desenhada para palavras-passe: resiste a ataques de dicionário e a tabelas pré-calculadas, e não é reversível. Guardar texto simples ou um hash rápido (MD5, SHA-1) seria inseguro. Contas antigas com texto simples são migradas para BCrypt no primeiro login.</dd>
+<dt>Porque JdbcTemplate em vez de JPA/Hibernate?</dt>
+<dd>O projeto é de bases de dados: o SQL é escrito à mão para o mostrar e controlar (junções, agregações, vistas, tratamento dos erros dos gatilhos). Como a lógica de negócio está nos gatilhos, o ORM trazia pouco valor e poderia interferir (por exemplo, a manter o Total ou o stock em memória). Usa sempre parâmetros, o que evita injeção de SQL.</dd>
+<dt>O que é uma transação e onde a usam?</dt>
+<dd>Um conjunto de operações que é executado por inteiro ou não é executado (atomicidade), mantendo a base de dados consistente (ACID). Usa-se no checkout (encomenda, linhas, pagamento, esvaziar carrinho), no pagamento (Pagamento e Encomenda) e no cancelamento (reembolso e estado). Se um gatilho ou uma CHECK falhar, faz-se ROLLBACK e nada fica gravado.</dd>
+<dt>Porque guardar PrecoUnitario na linha?</dt>
+<dd>Para o histórico não mudar quando o preço do produto muda: o total de uma encomenda antiga tem de continuar igual.</dd>
+<dt>Porque é que o Total é calculado por gatilho e não no Java?</dt>
+<dd>Fica num único sítio, coerente com as linhas, o cupão e os portes mesmo que os dados sejam alterados fora da aplicação (por exemplo, no SSMS). A função <code>fn_TotalEncomenda</code> é reutilizada pelos dois gatilhos.</dd>
+<dt>Como garantem que o cupão não é usado a mais?</dt>
+<dd><code>trg_Encomenda_UsaCupao</code> verifica a validade e que <code>UsosAtuais + 1 &lt;= UsosMaximos</code> e incrementa o contador na mesma transação da encomenda. Se falhar, a encomenda é recusada (erro 50002).</dd>
+<dt>O SQL Server não tem asserções. Como garantem regras entre tabelas?</dt>
+<dd>Com gatilhos AFTER que fazem ROLLBACK e THROW; as regras de domínio de uma tabela usam CHECK (ver secção 4.10).</dd>
+<dt>Porque é que um administrador é um Cliente com Papel?</dt>
+<dd>Há um único login e só dois papéis; uma coluna com CHECK basta e evita uma tabela extra. As rotas <code>/api/admin/**</code> verificam o papel na sessão.</dd>
+<dt>Porque há um Node/Express à frente do Spring Boot?</dt>
+<dd>O Express serve o frontend e faz proxy de <code>/api</code>; assim o browser usa uma só origem (sem problemas de CORS) e o cookie de sessão funciona.</dd>
+<dt>Como é a segurança do acesso?</dt>
+<dd>Sessão HTTP (<code>JSESSIONID</code>); 401 sem sessão e 403 se não for Admin; as encomendas só são visíveis para o cliente dono (404 para as de outros); palavras-passe com BCrypt; SQL parametrizado.</dd>
+<dt>Porque a eliminação de produtos é lógica?</dt>
+<dd>Um DELETE quebraria a integridade das linhas de encomenda históricas; por isso <code>Ativo = 0</code> esconde o produto do catálogo mantendo o histórico.</dd>
+<dt>O que fariam com mais tempo?</dt>
+<dd>Pagamento real com gateway externo, paginação do catálogo, validação de transições também na Devolução e índices adicionais conforme o volume de dados.</dd>
+</dl>
+
+</body>
+</html>

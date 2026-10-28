@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Produto - Tyvora</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        
+
+        :root {
+            --bg: #ffffff;
+            --bg-elevated: #fafafa;
+            --bg-card: #ffffff;
+            --bg-card-hover: #fbfbfd;
+            --border: #e5e5e7;
+            --border-light: #d2d2d7;
+
+            --text: #1d1d1f;
+            --text-muted: #6e6e73;
+            --text-dim: #86868b;
+
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --accent-soft: #8b5cf6;
+            --accent-warm: #f59e0b;
+
+            --success: #16a34a;
+            --danger: #ef4444;
+
+            --radius: 18px;
+            --radius-sm: 12px;
+            --radius-pill: 980px;
+
+            --transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            --transition-fast: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --shadow-lift: 0 12px 40px rgba(0, 0, 0, 0.10);
+            --glow-accent: 0 0 40px rgba(0, 113, 227, 0.18);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-3 {
+            margin-top: 1rem;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(0, 113, 227, 0.35) 50%,
+                    transparent 100%);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+            gap: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+            flex-shrink: 0;
+            transition: var(--transition-fast);
+        }
+
+        .logo-icon {
+            display: inline-grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            color: #fff;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+            transition: var(--transition-fast);
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(-8deg) scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.65rem 1rem;
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: var(--bg-elevated);
+        }
+
+        .nav-link.active {
+            color: var(--accent) !important;
+            background: rgba(0, 113, 227, 0.08);
+        }
+
+        .nav-link.active::after {
+            width: calc(100% - 24px);
+        }
+
+        .cart-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 0.55rem 1.1rem;
+            border-radius: var(--radius-pill);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            box-shadow: 0 4px 16px rgba(0, 113, 227, 0.25);
+        }
+
+        .cart-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow:
+                0 8px 24px rgba(0, 113, 227, 0.35),
+                var(--glow-accent);
+        }
+
+        .cart-count {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 0.1rem 0.5rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.72rem;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            color: var(--text-dim);
+        }
+
+        .produto-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .produto-imagem-wrapper {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .produto-imagem-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 0%,
+                    rgba(0, 113, 227, 0.06),
+                    rgba(139, 92, 246, 0.03) 40%,
+                    transparent 65%);
+            pointer-events: none;
+        }
+
+        .produto-imagem-wrapper img {
+            width: 100%;
+            height: 400px;
+            object-fit: contain;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.5s ease;
+        }
+
+        .produto-imagem-wrapper:hover img {
+            transform: scale(1.02);
+        }
+
+        .produto-acoes-rapidas {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn-icon {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .btn-icon:hover {
+            background: rgba(0, 113, 227, 0.06);
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .produto-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .produto-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .produto-badge {
+            display: inline-block;
+            padding: 0.3rem 0.7rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            backdrop-filter: blur(8px);
+        }
+
+        .badge-promo {
+            background: rgba(239, 68, 68, 0.10);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        .badge-novo {
+            background: rgba(0, 113, 227, 0.10);
+            color: var(--accent);
+            border: 1px solid rgba(0, 113, 227, 0.25);
+        }
+
+        .produto-titulo {
+            font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+
+        .produto-rating {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .estrelas {
+            display: flex;
+            gap: 2px;
+            font-size: 0.9rem;
+        }
+
+        .estrelas .fa-star {
+            color: var(--accent-warm);
+        }
+
+        .estrelas .fa-star.vazia {
+            color: var(--border-light);
+        }
+
+        .produto-rating-texto {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .preco-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preco-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 15%;
+            right: 15%;
+            height: 1px;
+            background: linear-gradient(90deg,
+                    transparent,
+                    var(--accent) 50%,
+                    transparent);
+            opacity: 0.5;
+        }
+
+        .preco-linha {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .preco-atual {
+            font-size: clamp(1.75rem, 3vw, 2.25rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            background: linear-gradient(135deg, var(--text), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .preco-original {
+            color: var(--text-dim);
+            text-decoration: line-through;
+            font-size: 0.95rem;
+            margin-top: 0.25rem;
+        }
+
+        .badge-desconto {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            padding: 0.4rem 0.9rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.8rem;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
+        }
+
+        .stock-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--success);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .stock-info.esgotado {
+            color: var(--danger);
+        }
+
+        .section-block {
+            margin-bottom: 2rem;
+        }
+
+        .section-block h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        .section-block p {
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-size: 0.9rem;
+        }
+
+        .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag-pill {
+            background: rgba(0, 113, 227, 0.08);
+            color: var(--accent);
+            border: 1px solid rgba(0, 113, 227, 0.18);
+            padding: 0.35rem 0.9rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.78rem;
+            font-weight: 500;
+        }
+
+        .acoes-compra {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .quantidade-control {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            padding: 0.3rem;
+            border-radius: var(--radius-pill);
+        }
+
+        .quantidade-btn {
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .quantidade-btn:hover {
+            background: rgba(0, 113, 227, 0.08);
+            color: var(--accent);
+        }
+
+        .quantidade-valor {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-height: 52px;
+            padding: 0.85rem 1.75rem;
+            border-radius: var(--radius-pill);
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            box-shadow: 0 4px 16px rgba(0, 113, 227, 0.25);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow:
+                0 8px 28px rgba(0, 113, 227, 0.35),
+                var(--glow-accent);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .info-adicional {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .info-item p:first-child {
+            font-weight: 600;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-item p:last-child {
+            color: var(--text);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 2rem;
+            width: 100%;
+        }
+
+        .loading-spinner {
+            width: 36px;
+            height: 36px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .relacionados-titulo {
+            font-size: clamp(1.5rem, 3vw, 1.85rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            margin-bottom: 2rem;
+            color: var(--text);
+        }
+
+        .produtos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .produto-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .produto-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lift);
+            border-color: var(--border-light);
+        }
+
+        .produto-img-container {
+            aspect-ratio: 1;
+            overflow: hidden;
+            background: var(--bg-elevated);
+        }
+
+        .produto-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .produto-card:hover .produto-img {
+            transform: scale(1.05);
+        }
+
+        .produto-card-info {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .produto-card-titulo {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            color: var(--text);
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+        }
+
+        .produto-card-preco {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .produto-card-acoes {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .btn-add-cart-relacionado {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 0.6rem;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .btn-add-cart-relacionado:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 113, 227, 0.35);
+        }
+
+        /* Cartões de "Produtos Relacionados" (gerados por cartaoProduto() do main.js).
+           .produto-titulo e .preco-atual também são usados no produto principal, por isso
+           aqui ficam limitados a .produto-card. */
+        .produto-info {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .produto-categoria {
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--accent);
+            margin-bottom: 0.4rem;
+        }
+
+        .produto-card .produto-titulo {
+            font-size: 0.95rem;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.35rem;
+        }
+
+        .produto-descricao {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.85rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .produto-preco {
+            margin-bottom: 1rem;
+        }
+
+        .produto-card .preco-atual {
+            font-size: 1.05rem;
+            background: none;
+            -webkit-text-fill-color: currentColor;
+            color: var(--text);
+        }
+
+        .produto-acoes {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .btn-add-cart {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 0.6rem;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .btn-add-cart:hover:not(:disabled) {
+            background: var(--accent-hover);
+        }
+
+        .btn-add-cart:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Formulário de avaliação */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.10);
+        }
+
+        #avaliacao-form .btn-primary {
+            flex: none;
+        }
+
+        .btn-detalhes {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .btn-detalhes:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 113, 227, 0.05);
+        }
+
+        .garantias-section {
+            background: var(--bg-elevated);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 3.5rem 0;
+            margin-top: 4rem;
+        }
+
+        .garantias-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+        }
+
+        .garantia-item {
+            text-align: center;
+        }
+
+        .garantia-icon {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 1.25rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: var(--transition-fast);
+        }
+
+        .garantia-item:hover .garantia-icon {
+            transform: scale(1.08) rotate(-4deg);
+        }
+
+        .garantia-icon.verde {
+            background: linear-gradient(135deg,
+                    rgba(22, 163, 74, 0.10),
+                    rgba(22, 163, 74, 0.05));
+            border: 1px solid rgba(22, 163, 74, 0.20);
+            color: var(--success);
+        }
+
+        .garantia-icon.roxo {
+            background: linear-gradient(135deg,
+                    rgba(139, 92, 246, 0.10),
+                    rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(139, 92, 246, 0.20);
+            color: var(--accent-soft);
+        }
+
+        .garantia-icon.azul {
+            background: linear-gradient(135deg,
+                    rgba(0, 113, 227, 0.10),
+                    rgba(0, 113, 227, 0.05));
+            border: 1px solid rgba(0, 113, 227, 0.20);
+            color: var(--accent);
+        }
+
+        .garantia-icon.ambar {
+            background: linear-gradient(135deg,
+                    rgba(245, 158, 11, 0.10),
+                    rgba(245, 158, 11, 0.05));
+            border: 1px solid rgba(245, 158, 11, 0.20);
+            color: var(--accent-warm);
+        }
+
+        .garantia-item h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        .garantia-item p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .footer {
+            background: var(--bg-elevated);
+            color: var(--text);
+            padding: 4rem 0 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .footer-logo i {
+            color: var(--accent);
+        }
+
+        .footer-links h3 {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 1.25rem;
+            color: var(--text);
+        }
+
+        .footer-links ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .footer-links a,
+        .footer-links li {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: var(--transition-fast);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-links i {
+            margin-right: 0.5rem;
+            opacity: 0.6;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .erro-container {
+            text-align: center;
+            padding: 5rem 2rem;
+        }
+
+        .erro-container i {
+            font-size: 4rem;
+            color: var(--danger);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .erro-container h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .erro-container p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .erro-container .btn-primary {
+            display: inline-flex;
+            flex: none;
+            text-decoration: none;
+        }
+
+        @media (max-width: 900px) {
+            .produto-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .produto-imagem-wrapper img {
+                height: 320px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                height: 68px;
+                gap: 1rem;
+            }
+
+            .nav-link {
+                padding: 0.55rem 0.75rem;
+                font-size: 0.82rem;
+            }
+
+            .cart-btn span:not(.cart-count) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                height: auto;
+                padding: 0.75rem 0;
+                gap: 0.75rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .produto-imagem-wrapper {
+                padding: 1.25rem;
+            }
+
+            .produto-imagem-wrapper img {
+                height: 260px;
+            }
+
+            .acoes-compra {
+                flex-direction: column;
+            }
+
+            .quantidade-control {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .produtos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="container navbar">
+            <a href="/" class="logo">
+                <span class="logo-icon">
+                    <i class="fas fa-bolt"></i>
+                </span>
+                Tyvora
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="/" class="nav-link">Início</a></li>
+                <li><a href="/produtos" class="nav-link active">Produtos</a></li>
+                <li><a href="/login" class="nav-link">Iniciar sessão</a></li>
+                <li>
+                    <button class="cart-btn" type="button" onclick="window.location.href='/carrinho'">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>Carrinho</span>
+                        <span class="cart-count">0</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Detalhes do Produto -->
+    <main class="container" style="min-height: 70vh; margin: 3rem auto;">
+        <div id="produto-detalhe">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+
+        <!-- Avaliações -->
+        <section id="avaliacoes" style="margin-top: 3rem; display: none;">
+            <h2 class="relacionados-titulo">Avaliações</h2>
+            <div id="avaliacoes-lista"></div>
+            <p id="avaliacao-login" style="display:none; margin-top:1rem;"></p>
+            <form id="avaliacao-form" style="display:none; margin-top:1.5rem; max-width:560px;">
+                <h3 style="margin-bottom:.75rem;">Deixe a sua avaliação</h3>
+                <div class="form-group">
+                    <label class="form-label" for="av-nota">Nota</label>
+                    <select id="av-nota" class="form-input">
+                        <option value="5">5 - Excelente</option>
+                        <option value="4">4 - Muito bom</option>
+                        <option value="3">3 - Bom</option>
+                        <option value="2">2 - Fraco</option>
+                        <option value="1">1 - Mau</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="av-comentario">Comentário</label>
+                    <textarea id="av-comentario" class="form-input" rows="3" maxlength="1000"></textarea>
+                </div>
+                <p id="av-erro" style="color:#991b1b;"></p>
+                <button type="submit" class="btn btn-primary">Enviar avaliação</button>
+            </form>
+        </section>
+
+        <!-- Produtos Relacionados -->
+        <section id="produtos-relacionados" style="margin-top: 4rem; display: none;">
+            <h2 class="relacionados-titulo">Produtos Relacionados</h2>
+            <div id="relacionados-container" class="produtos-grid"></div>
+        </section>
+    </main>
+
+    <!-- Garantia -->
+    <section class="garantias-section">
+        <div class="container">
+            <div class="garantias-grid">
+
+                <div class="garantia-item">
+                    <div class="garantia-icon verde">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Garantia de 1 Ano</h4>
+                    <p>Todos os nossos produtos possuem garantia</p>
+                </div>
+
+                <div class="garantia-item">
+                    <div class="garantia-icon roxo">
+                        <i class="fas fa-truck-fast"></i>
+                    </div>
+                    <h4>Entrega Rápida</h4>
+                    <p>Receba em até 48h nas principais cidades</p>
+                </div>
+
+                <div class="garantia-item">
+                    <div class="garantia-icon azul">
+                        <i class="fas fa-rotate-left"></i>
+                    </div>
+                    <h4>Devolução Grátis</h4>
+                    <p>30 dias para troca ou devolução</p>
+                </div>
+
+                <div class="garantia-item">
+                    <div class="garantia-icon ambar">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h4>Suporte 24/7</h4>
+                    <p>Estamos aqui para o ajudar</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+
+                <div>
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt"></i>
+                        TYVORA
+                    </div>
+                    <p
+                        style="color: var(--text-muted); margin-bottom: 1.5rem; max-width: 280px; font-size: 0.85rem; line-height: 1.6;">
+                        A sua experiência de compra premium.
+                    </p>
+                </div>
+
+                <div class="footer-links">
+                    <h3>Loja</h3>
+                    <ul>
+                        <li><a href="/">Início</a></li>
+                        <li><a href="/produtos">Produtos</a></li>
+                        <li><a href="/carrinho">Carrinho</a></li>
+                        <li><a href="/encomendas">A Minha Conta</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h3>Ajuda</h3>
+                    <ul>
+                        <li><a href="#">Perguntas Frequentes</a></li>
+                        <li><a href="/encomendas">Trocas e Devoluções</a></li>
+                        <li><a href="mailto:contacto@tyvora.com">Contacto</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h3>Contacto</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> contacto@tyvora.com</li>
+                        <li><i class="fas fa-phone"></i> +351 999 999 999</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Lisboa, Portugal</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Tyvora. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        let produtoAtual = null;
+
+        function erroProduto(msg) {
+            document.getElementById('produto-detalhe').innerHTML = `
+                <div class="erro-container">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Produto não encontrado</h3>
+                    ${msg ? `<p>${escapeHtml(msg)}</p>` : ''}
+                    <a href="/produtos" class="btn btn-primary mt-3">Ver Produtos</a>
+                </div>`;
+        }
+
+        async function carregarProduto() {
+            const produtoId = window.location.pathname.split('/').pop();
+            if (!produtoId) { erroProduto(''); return; }
+            try {
+                const produto = await api('GET', '/api/produtos/' + encodeURIComponent(produtoId), null, { semRedirect: true });
+                produtoAtual = produto;
+                renderizarProduto(produto);
+                carregarAvaliacoes();
+                carregarProdutosRelacionados(produto.categoria, produto.id);
+            } catch (e) {
+                erroProduto(e.message);
+            }
+        }
+
+        function estrelasHtml(nota) {
+            return Array.from({ length: 5 }).map((_, i) =>
+                `<i class="fas fa-star ${i < Math.round(Number(nota) || 0) ? '' : 'vazia'}"></i>`).join('');
+        }
+
+        function renderizarProduto(produto) {
+            const container = document.getElementById('produto-detalhe');
+            const avaliacao = Number(produto.avaliacao) || 0;
+            const stock = Number(produto.estoque) || 0;
+            document.title = produto.nome + ' - Tyvora';
+            container.innerHTML = `
+                <div class="breadcrumb">
+                    <a href="/">Início</a><span>/</span><a href="/produtos">Produtos</a><span>/</span>
+                    <span>${escapeHtml(produto.nome)}</span>
+                </div>
+                <div class="produto-grid">
+                    <div>
+                        <div class="produto-imagem-wrapper">${imgTag(produto.imagem, produto.nome, '')}</div>
+                    </div>
+                    <div>
+                        <div class="produto-header">
+                            <h1 class="produto-titulo">${escapeHtml(produto.nome)}</h1>
+                            <div class="produto-rating">
+                                <div class="estrelas">${estrelasHtml(avaliacao)}</div>
+                                <span class="produto-rating-texto">(${avaliacao.toFixed(1)}) &middot; ${Number(produto.numAvaliacoes) || 0} avaliações</span>
+                            </div>
+                        </div>
+                        <div class="preco-box">
+                            <div class="preco-linha">
+                                <div><div class="preco-atual">${formatarMoeda(produto.preco)}</div></div>
+                            </div>
+                            <p class="stock-info ${stock > 0 ? '' : 'esgotado'}">
+                                <i class="fas ${stock > 0 ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                                ${stock > 0 ? `Em stock (${stock} unidades)` : 'Esgotado'}
+                            </p>
+                        </div>
+                        <div class="section-block">
+                            <h3>Descrição</h3>
+                            <p>${escapeHtml(produto.descricao || '')}</p>
+                        </div>
+                        <div class="acoes-compra">
+                            <div class="quantidade-control">
+                                <button class="quantidade-btn" id="diminuir-qtd" type="button" aria-label="Diminuir quantidade">−</button>
+                                <span id="quantidade" class="quantidade-valor">1</span>
+                                <button class="quantidade-btn" id="aumentar-qtd" type="button" aria-label="Aumentar quantidade">+</button>
+                            </div>
+                            <button id="adicionar-carrinho" class="btn-primary" type="button"${stock > 0 ? '' : ' disabled'}>
+                                <i class="fas fa-cart-plus"></i> Adicionar ao Carrinho
+                            </button>
+                        </div>
+                        <div class="info-adicional">
+                            <div class="info-grid">
+                                <div class="info-item"><p>Categoria</p><p>${escapeHtml(produto.categoria || '—')}</p></div>
+                                <div class="info-item"><p>Referência</p><p>${escapeHtml(produto.sku || '—')}</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            let quantidade = 1;
+            const qEl = document.getElementById('quantidade');
+            document.getElementById('diminuir-qtd').addEventListener('click', () => {
+                if (quantidade > 1) { quantidade--; qEl.textContent = quantidade; }
+            });
+            document.getElementById('aumentar-qtd').addEventListener('click', () => {
+                if (quantidade >= stock) { mostrarAviso('Só há ' + stock + ' unidades em stock', 'error'); return; }
+                quantidade++; qEl.textContent = quantidade;
+            });
+            document.getElementById('adicionar-carrinho').addEventListener('click', (ev) => {
+                adicionarAoCarrinho(produto.id, quantidade, ev.currentTarget);
+            });
+        }
+
+        // ---------- Avaliações ----------
+        async function carregarAvaliacoes() {
+            const sec = document.getElementById('avaliacoes');
+            sec.style.display = 'block';
+            const lista = document.getElementById('avaliacoes-lista');
+            try {
+                const avs = (await api('GET', '/api/produtos/' + encodeURIComponent(produtoAtual.id) + '/avaliacoes', null, { semRedirect: true })) || [];
+                lista.innerHTML = avs.length === 0 ? '<p style="color:var(--text-muted);">Ainda não há avaliações.</p>' :
+                    avs.map(a => `
+                        <div style="border-bottom:1px solid var(--border-light, #e5e7eb);padding:.75rem 0;">
+                            <div class="estrelas" style="display:inline-flex;gap:2px;">${estrelasHtml(a.nota)}</div>
+                            <strong style="margin-left:.5rem;">${escapeHtml(a.cliente)}</strong>
+                            <small style="color:var(--text-muted);margin-left:.5rem;">${escapeHtml(formatarData(a.data))}</small>
+                            <p style="margin:.4rem 0 0;">${escapeHtml(a.comentario || '')}</p>
+                        </div>`).join('');
+            } catch (e) {
+                lista.innerHTML = '<p>Erro ao carregar avaliações: ' + escapeHtml(e.message) + '</p>';
+            }
+            await Tyvora.pronto;
+            const form = document.getElementById('avaliacao-form');
+            const aviso = document.getElementById('avaliacao-login');
+            form.style.display = Tyvora.user ? 'block' : 'none';
+            aviso.style.display = Tyvora.user ? 'none' : 'block';
+            aviso.innerHTML = '<a href="' + escapeHtml('/login?next=' + encodeURIComponent(location.pathname)) + '">Inicie sessão</a> para avaliar este produto.';
+        }
+
+        async function enviarAvaliacao(ev) {
+            ev.preventDefault();
+            const nota = Number(document.getElementById('av-nota').value);
+            const comentario = document.getElementById('av-comentario').value.trim();
+            const erro = document.getElementById('av-erro');
+            erro.textContent = '';
+            try {
+                await api('POST', '/api/produtos/' + encodeURIComponent(produtoAtual.id) + '/avaliacoes', { nota, comentario });
+                document.getElementById('av-comentario').value = '';
+                mostrarAviso('Avaliação registada');
+                const p = await api('GET', '/api/produtos/' + encodeURIComponent(produtoAtual.id), null, { semRedirect: true });
+                produtoAtual = p;
+                renderizarProduto(p);
+                await carregarAvaliacoes();
+            } catch (e) {
+                erro.textContent = e.status === 409 ? 'Já avaliou este produto.' : e.message;
+            }
+        }
+
+        async function carregarProdutosRelacionados(categoria, produtoIdAtual) {
+            try {
+                const produtos = (await api('GET', '/api/produtos?categoria=' + encodeURIComponent(categoria || ''), null, { semRedirect: true })) || [];
+                const relacionados = produtos.filter(p => String(p.id) !== String(produtoIdAtual)).slice(0, 4);
+                if (relacionados.length > 0) {
+                    document.getElementById('produtos-relacionados').style.display = 'block';
+                    const container = document.getElementById('relacionados-container');
+                    container.innerHTML = relacionados.map(cartaoProduto).join('');
+                    ligarBotoesAdicionar(container);
+                }
+            } catch (e) {
+                console.error('Erro ao carregar produtos relacionados:', e);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('avaliacao-form').addEventListener('submit', enviarAvaliacao);
+            carregarProduto();
+        });
+
+    </script>
+</body>
+
+</html>

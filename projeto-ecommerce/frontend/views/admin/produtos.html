@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos - Administração Tyvora</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+        <main class="admin-content">
+            <header class="admin-topo">
+                <h1>Produtos</h1>
+                <div class="admin-topo-user" id="admin-user"></div>
+            </header>
+
+            <div class="painel">
+                <h3 id="form-titulo">Novo produto</h3>
+                <div id="form-erro"></div>
+                <form id="produto-form" class="form-grid">
+                    <input type="hidden" id="f-id">
+                    <label>SKU <input id="f-sku" required maxlength="30"></label>
+                    <label>Nome <input id="f-nome" required maxlength="150"></label>
+                    <label>Preço (EUR) <input id="f-preco" type="number" step="0.01" min="0.01" required></label>
+                    <label>Stock <input id="f-estoque" type="number" min="0" step="1" required value="0"></label>
+                    <label>Categoria
+                        <select id="f-categoria" required></select>
+                    </label>
+                    <label id="f-categoria-outra-wrap" style="display:none;">Id da categoria
+                        <input id="f-categoria-outra" type="number" min="1" step="1">
+                    </label>
+                    <label class="larga">URL da imagem <input id="f-imagem" maxlength="500"></label>
+                    <label class="larga">Descrição <textarea id="f-descricao" rows="3"></textarea></label>
+                    <label id="f-ativo-wrap" style="display:none;flex-direction:row;align-items:center;gap:.5rem;">
+                        <input id="f-ativo" type="checkbox" checked> Ativo
+                    </label>
+                    <div class="larga acoes-linha">
+                        <button type="submit" class="btn btn-primary" id="f-guardar">Guardar</button>
+                        <button type="button" class="btn btn-outline" id="f-cancelar" style="display:none;">Cancelar edição</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="painel">
+                <h3>Lista de produtos</h3>
+                <div id="lista-erro"></div>
+                <div id="lista-produtos"><p class="msg-vazio">A carregar...</p></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/admin.js"></script>
+    <script>
+        let produtos = [];
+        const $ = (id) => document.getElementById(id);
+
+        // Categorias (id + nome) obtidas a partir dos produtos já listados
+        function preencherCategorias(selecionada) {
+            const mapa = new Map();
+            produtos.forEach(p => { if (p.categoriaId != null) mapa.set(String(p.categoriaId), p.categoria || ('Categoria ' + p.categoriaId)); });
+            const sel = $('f-categoria');
+            sel.innerHTML = '';
+            mapa.forEach((nome, id) => {
+                const o = document.createElement('option');
+                o.value = id; o.textContent = nome + ' (id ' + id + ')';
+                sel.appendChild(o);
+            });
+            const outra = document.createElement('option');
+            outra.value = '__outra'; outra.textContent = 'Outra (indicar o id)...';
+            sel.appendChild(outra);
+            if (selecionada != null && mapa.has(String(selecionada))) sel.value = String(selecionada);
+            else if (mapa.size === 0) sel.value = '__outra';
+            atualizarOutra();
+        }
+
+        function atualizarOutra() {
+            const outra = $('f-categoria').value === '__outra';
+            $('f-categoria-outra-wrap').style.display = outra ? 'flex' : 'none';
+            $('f-categoria-outra').required = outra;
+        }
+
+        function limparForm() {
+            $('produto-form').reset();
+            $('f-id').value = '';
+            $('form-titulo').textContent = 'Novo produto';
+            $('f-ativo-wrap').style.display = 'none';
+            $('f-cancelar').style.display = 'none';
+            $('form-erro').innerHTML = '';
+            preencherCategorias();
+        }
+
+        function editar(id) {
+            const p = produtos.find(x => String(x.id) === String(id));
+            if (!p) return;
+            $('f-id').value = p.id;
+            $('f-sku').value = p.sku || '';
+            $('f-nome').value = p.nome || '';
+            $('f-preco').value = p.preco;
+            $('f-estoque').value = p.estoque;
+            $('f-imagem').value = p.imagem || '';
+            $('f-descricao').value = p.descricao || '';
+            $('f-ativo').checked = p.ativo !== false;
+            $('f-ativo-wrap').style.display = 'flex';
+            $('form-titulo').textContent = 'Editar produto #' + p.id;
+            $('f-cancelar').style.display = '';
+            preencherCategorias(p.categoriaId);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function eliminar(id) {
+            if (!confirm('Desativar este produto? (eliminação lógica)')) return;
+            try {
+                await api('DELETE', '/api/admin/produtos/' + encodeURIComponent(id));
+                mostrarAviso('Produto desativado');
+                await carregar();
+            } catch (e) {
+                mostrarAviso(e.message, 'error');
+            }
+        }
+
+        function desenharLista() {
+            const caixa = $('lista-produtos');
+            if (produtos.length === 0) { caixa.innerHTML = '<p class="msg-vazio">Ainda não há produtos.</p>'; return; }
+            caixa.innerHTML = `<div class="tabela-wrap"><table class="tabela"><thead><tr>
+                <th></th><th>Id</th><th>SKU</th><th>Nome</th><th>Categoria</th><th>Preço</th><th>Stock</th><th>Ativo</th><th></th>
+                </tr></thead><tbody>${produtos.map(p => `<tr>
+                <td>${imgTag(p.imagem, p.nome, '')}</td>
+                <td>${escapeHtml(p.id)}</td><td>${escapeHtml(p.sku)}</td><td>${escapeHtml(p.nome)}</td>
+                <td>${escapeHtml(p.categoria || '')}</td><td>${formatarMoeda(p.preco)}</td>
+                <td>${escapeHtml(p.estoque)}</td><td>${p.ativo === false ? 'Não' : 'Sim'}</td>
+                <td><div class="acoes-linha">
+                    <button type="button" class="btn-mini" data-editar="${escapeHtml(p.id)}">Editar</button>
+                    <button type="button" class="btn-mini perigo" data-eliminar="${escapeHtml(p.id)}">Desativar</button>
+                </div></td></tr>`).join('')}</tbody></table></div>`;
+            caixa.querySelectorAll('img').forEach(i => { i.style.cssText = 'width:44px;height:44px;object-fit:cover;border-radius:6px;'; });
+            caixa.querySelectorAll('[data-editar]').forEach(b => b.addEventListener('click', () => editar(b.dataset.editar)));
+            caixa.querySelectorAll('[data-eliminar]').forEach(b => b.addEventListener('click', () => eliminar(b.dataset.eliminar)));
+        }
+
+        async function carregar() {
+            try {
+                produtos = (await api('GET', '/api/admin/produtos')) || [];
+                $('lista-erro').innerHTML = '';
+                const atual = $('f-categoria').value;
+                preencherCategorias(atual && atual !== '__outra' ? atual : undefined);
+                desenharLista();
+            } catch (e) {
+                mensagemErro($('lista-erro'), 'Erro ao carregar produtos: ' + e.message);
+                $('lista-produtos').innerHTML = '';
+            }
+        }
+
+        async function guardar(ev) {
+            ev.preventDefault();
+            const id = $('f-id').value;
+            const catSel = $('f-categoria').value;
+            const categoriaId = Number(catSel === '__outra' ? $('f-categoria-outra').value : catSel);
+            const corpo = {
+                sku: $('f-sku').value.trim(),
+                nome: $('f-nome').value.trim(),
+                descricao: $('f-descricao').value.trim(),
+                preco: Number($('f-preco').value),
+                estoque: Number($('f-estoque').value),
+                imagem: $('f-imagem').value.trim(),
+                categoriaId: categoriaId
+            };
+            if (id) {
+                corpo.ativo = $('f-ativo').checked;
+                const antigo = produtos.find(x => String(x.id) === String(id));
+                if (antigo && antigo.fornecedorId != null) corpo.fornecedorId = antigo.fornecedorId;
+            }
+            $('f-guardar').disabled = true;
+            try {
+                if (id) await api('PUT', '/api/admin/produtos/' + encodeURIComponent(id), corpo);
+                else await api('POST', '/api/admin/produtos', corpo);
+                mostrarAviso(id ? 'Produto atualizado' : 'Produto criado');
+                limparForm();
+                await carregar();
+            } catch (e) {
+                mensagemErro($('form-erro'), e.message);
+            } finally {
+                $('f-guardar').disabled = false;
+            }
+        }
+
+        (async function iniciar() {
+            if (!await iniciarAdmin('/admin/produtos')) return;
+            $('f-categoria').addEventListener('change', atualizarOutra);
+            $('produto-form').addEventListener('submit', guardar);
+            $('f-cancelar').addEventListener('click', limparForm);
+            await carregar();
+        })();
+    </script>
+</body>
+
+</html>

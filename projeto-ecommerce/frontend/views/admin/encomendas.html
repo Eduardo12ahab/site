@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encomendas - Administração Tyvora</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+        <main class="admin-content">
+            <header class="admin-topo">
+                <h1>Encomendas</h1>
+                <div class="admin-topo-user" id="admin-user"></div>
+            </header>
+
+            <div class="painel">
+                <h3>Encomendas</h3>
+                <div class="filtros">
+                    <label for="filtro-estado">Estado:</label>
+                    <select id="filtro-estado">
+                        <option value="">Todos</option>
+                        <option>Pendente</option><option>Paga</option><option>Enviada</option>
+                        <option>Entregue</option><option>Cancelada</option>
+                    </select>
+                </div>
+                <div id="enc-erro"></div>
+                <div id="lista-encomendas"><p class="msg-vazio">A carregar...</p></div>
+            </div>
+
+            <div class="painel">
+                <h3>Devoluções</h3>
+                <div id="dev-erro"></div>
+                <div id="lista-devolucoes"><p class="msg-vazio">A carregar...</p></div>
+            </div>
+
+            <div class="painel">
+                <h3>Relatórios</h3>
+                <div class="filtros">
+                    <label for="rel-nome">Relatório:</label>
+                    <select id="rel-nome">
+                        <option value="vendas-produto">Vendas por produto</option>
+                        <option value="clientes-ativos">Clientes ativos</option>
+                        <option value="stock-baixo">Stock baixo</option>
+                        <option value="top-produtos">Top produtos</option>
+                        <option value="media-avaliacoes">Média de avaliações</option>
+                        <option value="encomendas-pendentes">Encomendas pendentes</option>
+                    </select>
+                    <button type="button" class="btn btn-outline" id="rel-ver">Ver</button>
+                </div>
+                <div id="rel-resultado"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/admin.js"></script>
+    <script>
+        const $ = (id) => document.getElementById(id);
+
+        // Transições permitidas (a regra final é da BD; aqui só se mostram os botões possíveis)
+        const PROXIMOS = {
+            Pendente: ['Cancelada'],
+            Paga: ['Enviada', 'Cancelada'],
+            Enviada: ['Entregue'],
+            Entregue: [],
+            Cancelada: []
+        };
+        const PROXIMOS_DEV = { Pedida: ['Aprovada', 'Recusada'], Aprovada: ['Concluida'], Recusada: [], Concluida: [] };
+
+        async function carregarEncomendas() {
+            const estado = $('filtro-estado').value;
+            const caixa = $('lista-encomendas');
+            try {
+                const lista = (await api('GET', '/api/admin/encomendas' + (estado ? '?estado=' + encodeURIComponent(estado) : ''))) || [];
+                if (lista.length === 0) { caixa.innerHTML = '<p class="msg-vazio">Sem encomendas.</p>'; return; }
+                caixa.innerHTML = `<div class="tabela-wrap"><table class="tabela"><thead><tr>
+                    <th>Id</th><th>Data</th><th>Cliente</th><th>Linhas</th><th>Total</th><th>Pagamento</th><th>Estado</th><th>Ações</th>
+                    </tr></thead><tbody>${lista.map(e => `<tr>
+                    <td>#${escapeHtml(e.id)}</td>
+                    <td>${escapeHtml(formatarData(e.data))}</td>
+                    <td>${escapeHtml(e.cliente ? e.cliente.nome : '')}<br><small>${escapeHtml(e.cliente ? e.cliente.email : '')}</small></td>
+                    <td>${(e.linhas || []).map(l => escapeHtml(l.quantidade + 'x ' + l.nome)).join('<br>')}</td>
+                    <td>${formatarMoeda(e.total)}</td>
+                    <td>${e.pagamento ? escapeHtml(e.pagamento.metodo) + ' ' + badgeEstado(e.pagamento.estado) : ''}</td>
+                    <td>${badgeEstado(e.estado)}</td>
+                    <td><div class="acoes-linha">${(PROXIMOS[e.estado] || []).map(n =>
+                        `<button type="button" class="btn-mini${n === 'Cancelada' ? ' perigo' : ''}" data-enc="${escapeHtml(e.id)}" data-estado="${n}">${n}</button>`).join('')}</div></td>
+                    </tr>`).join('')}</tbody></table></div>`;
+                caixa.querySelectorAll('[data-enc]').forEach(b => b.addEventListener('click', () =>
+                    mudarEstadoEncomenda(b.dataset.enc, b.dataset.estado)));
+            } catch (e) {
+                mensagemErro($('enc-erro'), 'Erro ao carregar encomendas: ' + e.message);
+                caixa.innerHTML = '';
+            }
+        }
+
+        async function mudarEstadoEncomenda(id, estado) {
+            try {
+                await api('PUT', '/api/admin/encomendas/' + encodeURIComponent(id) + '/estado', { estado });
+                mostrarAviso('Encomenda #' + id + ' passou a ' + estado);
+                $('enc-erro').innerHTML = '';
+            } catch (e) {
+                const msg = e.status === 409
+                    ? 'Transição de estado inválida: ' + e.message
+                    : 'Erro ao mudar o estado: ' + e.message;
+                mensagemErro($('enc-erro'), msg);
+                mostrarAviso(msg, 'error');
+            }
+            await carregarEncomendas();
+        }
+
+        async function carregarDevolucoes() {
+            const caixa = $('lista-devolucoes');
+            try {
+                const lista = (await api('GET', '/api/admin/devolucoes')) || [];
+                if (lista.length === 0) { caixa.innerHTML = '<p class="msg-vazio">Sem devoluções.</p>'; return; }
+                caixa.innerHTML = `<div class="tabela-wrap"><table class="tabela"><thead><tr>
+                    <th>Id</th><th>Encomenda</th><th>Data</th><th>Motivo</th><th>Itens</th><th>Estado</th><th>Ações</th>
+                    </tr></thead><tbody>${lista.map(d => `<tr>
+                    <td>#${escapeHtml(d.id)}</td><td>#${escapeHtml(d.encomendaId)}</td>
+                    <td>${escapeHtml(formatarData(d.data))}</td><td>${escapeHtml(d.motivo || '')}</td>
+                    <td>${(d.itens || []).map(i => escapeHtml(i.quantidade + 'x ' + i.nome)).join('<br>')}</td>
+                    <td>${badgeEstado(d.estado)}</td>
+                    <td><div class="acoes-linha">${(PROXIMOS_DEV[d.estado] || []).map(n =>
+                        `<button type="button" class="btn-mini${n === 'Recusada' ? ' perigo' : ''}" data-dev="${escapeHtml(d.id)}" data-estado="${n}">${n === 'Concluida' ? 'Concluir' : n === 'Aprovada' ? 'Aprovar' : 'Recusar'}</button>`).join('')}</div></td>
+                    </tr>`).join('')}</tbody></table></div>`;
+                caixa.querySelectorAll('[data-dev]').forEach(b => b.addEventListener('click', () =>
+                    mudarEstadoDevolucao(b.dataset.dev, b.dataset.estado)));
+            } catch (e) {
+                mensagemErro($('dev-erro'), 'Erro ao carregar devoluções: ' + e.message);
+                caixa.innerHTML = '';
+            }
+        }
+
+        async function mudarEstadoDevolucao(id, estado) {
+            try {
+                await api('PUT', '/api/admin/devolucoes/' + encodeURIComponent(id) + '/estado', { estado });
+                mostrarAviso('Devolução #' + id + ' passou a ' + estado);
+                $('dev-erro').innerHTML = '';
+            } catch (e) {
+                const msg = 'Não foi possível alterar a devolução: ' + e.message;
+                mensagemErro($('dev-erro'), msg);
+                mostrarAviso(msg, 'error');
+            }
+            await carregarDevolucoes();
+        }
+
+        async function verRelatorio() {
+            const nome = $('rel-nome').value;
+            const caixa = $('rel-resultado');
+            caixa.innerHTML = '<p class="msg-vazio">A carregar...</p>';
+            try {
+                caixa.innerHTML = tabelaGenerica(await api('GET', '/api/admin/relatorios/' + encodeURIComponent(nome)));
+            } catch (e) {
+                mensagemErro(caixa, 'Erro ao carregar o relatório: ' + e.message);
+            }
+        }
+
+        (async function iniciar() {
+            if (!await iniciarAdmin('/admin/encomendas')) return;
+            $('filtro-estado').addEventListener('change', () => { $('enc-erro').innerHTML = ''; carregarEncomendas(); });
+            $('rel-ver').addEventListener('click', verRelatorio);
+            await Promise.all([carregarEncomendas(), carregarDevolucoes()]);
+            verRelatorio();
+        })();
+    </script>
+</body>
+
+</html>

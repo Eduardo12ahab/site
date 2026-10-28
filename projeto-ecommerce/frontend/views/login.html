@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Iniciar sessão - Tyvora</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #ffffff;
+            --bg-elevated: #fafafa;
+            --bg-card: #ffffff;
+            --bg-card-hover: #fbfbfd;
+            --border: #e5e5e7;
+            --border-light: #d2d2d7;
+
+            --text: #1d1d1f;
+            --text-muted: #6e6e73;
+            --text-dim: #86868b;
+
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --accent-soft: #8b5cf6;
+            --accent-warm: #f59e0b;
+
+            --success: #16a34a;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+
+            --radius: 18px;
+            --radius-sm: 12px;
+            --radius-pill: 980px;
+
+            --transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            --transition-fast: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --shadow-lift: 0 12px 40px rgba(0, 0, 0, 0.10);
+            --glow-accent: 0 0 40px rgba(0, 113, 227, 0.18);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(0, 113, 227, 0.35) 50%,
+                    transparent 100%);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .navbar {
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-icon {
+            display: inline-grid;
+            place-items: center;
+
+            width: 36px;
+            height: 36px;
+
+            margin-right: 0.5rem;
+
+            border-radius: 10px;
+
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            color: #fff !important;
+            font-size: 0.9rem;
+
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+            transition: var(--transition-fast);
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(-8deg) scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+
+            min-height: 44px;
+            padding: 0.65rem 1rem;
+
+            color: var(--text-muted);
+
+            font-size: 0.9rem;
+            font-weight: 500;
+
+            border-radius: 10px;
+            text-decoration: none;
+
+            transition: var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: var(--bg-elevated);
+        }
+
+        .nav-link.active {
+            color: var(--accent) !important;
+            background: rgba(0, 113, 227, 0.08);
+        }
+
+        .nav-link.active::after {
+            width: calc(100% - 24px);
+        }
+
+        /* Botão do carrinho desenhado pelo main.js */
+        .cart-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 1.1rem;
+            border: none;
+            border-radius: var(--radius-pill);
+            background: var(--accent);
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: 0 4px 16px rgba(0, 113, 227, 0.25);
+            transition: var(--transition-fast);
+        }
+
+        .cart-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .cart-btn .cart-count {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: none;
+        }
+
+        .cart-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+        }
+
+        .cart-link i {
+            font-size: 0.95rem;
+        }
+
+        .cart-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+
+            border-radius: var(--radius-pill);
+
+            background: var(--accent);
+            color: #fff;
+
+            font-size: 0.72rem;
+            font-weight: 700;
+
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+        }
+
+        main.container {
+            max-width: 1200px;
+            margin: 0 auto;
+
+            min-height: calc(100vh - 80px);
+            min-height: calc(100dvh - 80px);
+
+            padding: clamp(2rem, 5vw, 4rem) 1rem clamp(3rem, 6vw, 5rem);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            position: relative;
+        }
+
+        main.container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle,
+                    rgba(0, 113, 227, 0.06) 0%,
+                    rgba(139, 92, 246, 0.03) 35%,
+                    transparent 65%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        main.container>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            width: min(100%, 520px);
+
+            padding: clamp(1.5rem, 5vw, 2.7rem);
+
+            background: var(--bg-card);
+
+            border: 1px solid var(--border);
+            border-radius: 24px;
+
+            box-shadow: var(--shadow-lift);
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 15%;
+            right: 15%;
+            height: 2px;
+            background: linear-gradient(90deg,
+                    transparent,
+                    var(--accent) 50%,
+                    transparent);
+            opacity: 0.6;
+        }
+
+        .form-container>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-title {
+            font-size: clamp(1.55rem, 4vw, 2rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .form-description {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 0.92rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            min-height: 52px;
+
+            padding: 0.85rem 1rem;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            background: var(--bg-elevated);
+            color: var(--text);
+
+            font-size: 0.95rem;
+            outline: none;
+
+            transition: var(--transition-fast);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .form-input:hover {
+            border-color: var(--border-light);
+            background: #ffffff;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.10);
+            transform: translateY(-1px);
+        }
+
+        .form-input.input-error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.10);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper .form-input {
+            padding-right: 3.5rem;
+        }
+
+        #toggle-senha {
+            position: absolute;
+            right: 0.55rem;
+            top: 50%;
+            transform: translateY(-50%);
+
+            width: 40px;
+            height: 40px;
+
+            display: grid;
+            place-items: center;
+
+            border: none;
+            border-radius: 9px;
+
+            background: transparent;
+            color: var(--text-muted);
+
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        #toggle-senha:hover {
+            background: rgba(0, 113, 227, 0.08);
+            color: var(--accent);
+        }
+
+        input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: var(--accent);
+        }
+
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .remember-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .remember-label span,
+        .forgot-password {
+            font-size: 0.875rem;
+        }
+
+        .remember-label span {
+            color: var(--text-muted);
+        }
+
+        .forgot-password {
+            color: var(--accent);
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+            color: var(--accent-hover);
+        }
+
+        .btn {
+            border-radius: var(--radius-pill) !important;
+            font-weight: 500 !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: var(--transition-fast);
+            border: 1px solid transparent;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            min-height: 52px;
+            border: none !important;
+            background: var(--accent) !important;
+            color: #fff !important;
+            box-shadow: 0 4px 16px rgba(0, 113, 227, 0.25);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            background: var(--accent-hover) !important;
+            box-shadow:
+                0 8px 28px rgba(0, 113, 227, 0.35),
+                var(--glow-accent);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-outline {
+            min-height: 52px;
+            border: 1px solid var(--border-light) !important;
+            background: transparent !important;
+            color: var(--text) !important;
+        }
+
+        .btn-outline:hover {
+            transform: translateY(-1px);
+            border-color: var(--accent) !important;
+            background: rgba(0, 113, 227, 0.05) !important;
+            color: var(--accent) !important;
+        }
+
+        .btn-link {
+            color: var(--accent) !important;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline !important;
+        }
+
+        .social-login {
+            padding: 3rem 1rem;
+            background: var(--bg-elevated);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .social-title {
+            margin-bottom: 1.2rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .social-button {
+            flex: 1;
+            width: 100%;
+            max-width: 210px;
+            min-height: 50px;
+            padding: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .social-button i {
+            color: var(--accent) !important;
+        }
+
+        .form-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            line-height: 1.45;
+            animation: messageIn 0.3s ease;
+        }
+
+        .form-message.error {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        .form-message.success {
+            color: var(--success);
+            background: rgba(22, 163, 74, 0.08);
+            border: 1px solid rgba(22, 163, 74, 0.25);
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .footer {
+            padding-top: 3.5rem;
+            background: var(--bg-elevated);
+            color: var(--text);
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 3rem;
+            padding-bottom: 3rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .footer-logo i {
+            color: var(--accent);
+        }
+
+        .footer-description {
+            max-width: 380px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-size: 0.85rem;
+        }
+
+        .footer-links h3 {
+            margin-bottom: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text);
+        }
+
+        .footer-links ul {
+            display: grid;
+            gap: 0.7rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            padding: 1.5rem 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-4 {
+            margin-bottom: 2rem;
+        }
+
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 850px) {
+            .navbar {
+                min-height: 68px;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                gap: 0.25rem;
+            }
+
+            .nav-link {
+                min-height: 42px;
+                padding: 0.6rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .navbar {
+                min-height: auto;
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+                flex-direction: column;
+                justify-content: center;
+                gap: 0.7rem;
+            }
+
+            .logo {
+                font-size: 1.15rem;
+            }
+
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+            }
+
+            .nav-links {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.35rem;
+            }
+
+            .nav-link {
+                min-height: 40px;
+                padding: 0.6rem 0.8rem;
+                font-size: 0.82rem;
+            }
+
+            .nav-link.active::after {
+                width: calc(100% - 20px);
+            }
+
+            main.container {
+                min-height: auto;
+                padding: 2rem 0.85rem 3rem;
+            }
+
+            .form-container {
+                padding: 1.6rem;
+                border-radius: 20px;
+            }
+
+            .form-title {
+                font-size: 1.5rem;
+            }
+
+            .form-input {
+                min-height: 52px;
+                /* 16px evita zoom automático em iOS */
+                font-size: 16px;
+            }
+
+            .login-options {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .forgot-password {
+                margin-left: 1.55rem;
+            }
+
+            .social-login {
+                padding: 2.5rem 0.85rem;
+            }
+
+            .social-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .social-button {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .navbar {
+                gap: 0.6rem;
+            }
+
+            .nav-links {
+                gap: 0.25rem;
+            }
+
+            .nav-link {
+                min-height: 38px;
+                padding: 0.55rem 0.7rem;
+                font-size: 0.78rem;
+            }
+
+            .cart-link {
+                gap: 0.35rem;
+            }
+
+            .cart-count {
+                min-width: 20px;
+                height: 20px;
+                padding: 0 5px;
+                font-size: 0.68rem;
+            }
+
+            .form-container {
+                padding: 1.35rem;
+                border-radius: 18px;
+            }
+
+            .form-title {
+                font-size: 1.4rem;
+            }
+
+            .form-description {
+                font-size: 0.88rem;
+            }
+
+            .login-options {
+                gap: 0.75rem;
+            }
+
+            .footer {
+                padding-top: 2.5rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .nav-link {
+                padding: 0.5rem 0.55rem;
+                font-size: 0.75rem;
+            }
+
+            .nav-link i {
+                font-size: 0.75rem;
+            }
+
+            .form-container {
+                padding: 1.15rem;
+            }
+
+            .form-title {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-height: 650px) and (orientation: landscape) {
+            main.container {
+                min-height: auto;
+                padding-top: 1.5rem;
+                padding-bottom: 2rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- CABEÇALHO -->
+    <header class="header">
+        <nav class="container navbar">
+
+            <a href="/" class="logo">
+                <span class="logo-icon">
+                    <i class="fas fa-bolt"></i>
+                </span>
+                Tyvora
+            </a>
+
+            <ul class="nav-links">
+
+                <li>
+                    <a href="/" class="nav-link">
+                        Início
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/produtos" class="nav-link">
+                        Produtos
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/carrinho" class="nav-link cart-link">
+                        <i class="fas fa-shopping-bag"></i>
+                        Carrinho
+                        <span id="cart-count" class="cart-count">0</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/login" class="nav-link active">
+                        Iniciar sessão
+                    </a>
+                </li>
+
+            </ul>
+
+        </nav>
+    </header>
+
+
+    <!-- LOGIN -->
+    <main class="container">
+
+        <div class="form-container">
+
+            <div class="text-center mb-4">
+
+                <div class="logo" style="justify-content: center; margin-bottom: 1rem;">
+                    <span class="logo-icon">
+                        <i class="fas fa-bolt"></i>
+                    </span>
+                    Tyvora
+                </div>
+
+                <h2 class="form-title">
+                    Bem-vindo de volta
+                </h2>
+
+                <p class="form-description">
+                    Inicie sessão na sua conta para continuar.
+                </p>
+
+            </div>
+
+
+            <form id="login-form">
+
+                <div class="form-group">
+                    <label for="email" class="form-label">
+                        Endereço de email
+                    </label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="o.seu@email.com"
+                        autocomplete="email" required>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="senha" class="form-label">
+                        Palavra-passe
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" id="senha" name="senha" class="form-input"
+                            placeholder="Introduza a sua palavra-passe" autocomplete="current-password" required>
+                        <button type="button" id="toggle-senha" aria-label="Mostrar a palavra-passe">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="login-options" style="justify-content: flex-end;">
+                    <a href="#" class="forgot-password" id="forgot-password">
+                        Esqueceu-se da palavra-passe?
+                    </a>
+                </div>
+
+
+                <button type="submit" id="login-button" class="btn btn-primary" style="width: 100%; padding: 1rem;">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Iniciar sessão
+                </button>
+
+            </form>
+
+
+            <div class="text-center mt-4">
+                <p style="color: var(--text-muted); font-size: 0.9rem;">
+                    Ainda não tem uma conta?
+                </p>
+
+                <a href="/cadastro" class="btn btn-outline"
+                    style="width: 100%; padding: 0.95rem; margin-top: 0.5rem; text-decoration: none;">
+                    <i class="fas fa-user-plus"></i>
+                    Criar conta
+                </a>
+            </div>
+
+
+            <div class="text-center mt-4">
+                <a href="/" class="btn btn-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar à loja
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="footer-grid">
+
+                <div>
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt"></i>
+                        Tyvora
+                    </div>
+                    <p class="footer-description">
+                        Uma experiência de compra simples, segura e pensada para si.
+                    </p>
+                </div>
+
+                <div class="footer-links">
+                    <h3>Loja</h3>
+                    <ul>
+                        <li><a href="/">Início</a></li>
+                        <li><a href="/produtos">Produtos</a></li>
+                        <li><a href="/carrinho">Carrinho</a></li>
+                        <li><a href="/login">Iniciar sessão</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h3>Ajuda</h3>
+                    <ul>
+                        <li><a href="#">Apoio ao cliente</a></li>
+                        <li><a href="#">Perguntas frequentes</a></li>
+                        <li><a href="mailto:contacto@tyvora.com">Contactos</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Tyvora. Todos os direitos reservados.</p>
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- JAVASCRIPT -->
+    <script src="/js/main.js"></script>
+    <script>
+
+        // Destino após login: ?next=/pagina (só caminhos locais)
+        function destinoPosLogin() {
+            const p = new URLSearchParams(window.location.search);
+            const next = p.get("next") || p.get("redirect") || "/";
+            return (next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\")) ? next : "/";
+        }
+
+        const loginForm = document.getElementById("login-form");
+        const senhaInput = document.getElementById("senha");
+        const toggleSenha = document.getElementById("toggle-senha");
+        const loginButton = document.getElementById("login-button");
+        const emailInput = document.getElementById("email");
+
+        toggleSenha.addEventListener("click", function () {
+            const icon = this.querySelector("i");
+            if (senhaInput.type === "password") {
+                senhaInput.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+                this.setAttribute("aria-label", "Ocultar a palavra-passe");
+            } else {
+                senhaInput.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+                this.setAttribute("aria-label", "Mostrar a palavra-passe");
+            }
+        });
+
+        function mostrarMensagem(mensagem, tipo = "error") {
+            const antiga = document.querySelector(".form-message");
+            if (antiga) antiga.remove();
+
+            const message = document.createElement("div");
+            message.className = `form-message ${tipo}`;
+
+            const icon = document.createElement("i");
+            icon.className = tipo === "success"
+                ? "fas fa-check-circle"
+                : "fas fa-exclamation-circle";
+
+            const text = document.createElement("span");
+            text.textContent = mensagem;
+
+            message.appendChild(icon);
+            message.appendChild(text);
+            loginForm.appendChild(message);
+            return message;
+        }
+
+        function limparErros() {
+            emailInput.classList.remove("input-error");
+            senhaInput.classList.remove("input-error");
+            const message = document.querySelector(".form-message");
+            if (message) message.remove();
+        }
+
+        loginForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            limparErros();
+
+            const email = emailInput.value.trim();
+            const senha = senhaInput.value;
+
+            if (!email) {
+                emailInput.classList.add("input-error");
+                mostrarMensagem("Introduza o seu endereço de email.");
+                emailInput.focus();
+                return;
+            }
+
+            if (!senha) {
+                senhaInput.classList.add("input-error");
+                mostrarMensagem("Introduza a sua palavra-passe.");
+                senhaInput.focus();
+                return;
+            }
+
+            const originalText = loginButton.innerHTML;
+            loginButton.disabled = true;
+            loginButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> A iniciar sessão...`;
+
+            try {
+                const response = await fetch("/api/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, senha })
+                });
+
+                let data = {};
+                try { data = await response.json(); } catch { data = {}; }
+
+                if (!response.ok) {
+                    throw new Error(data.message || "Email ou palavra-passe incorretos.");
+                }
+
+                loginButton.innerHTML = `<i class="fas fa-check"></i> A sessão foi iniciada!`;
+                loginButton.style.background = "linear-gradient(135deg, #34d399, #16a34a)";
+
+                mostrarMensagem(data.message || "O login foi realizado com sucesso!", "success");
+
+                setTimeout(function () {
+                    window.location.href = destinoPosLogin();
+                }, 900);
+
+            } catch (error) {
+                emailInput.classList.add("input-error");
+                senhaInput.classList.add("input-error");
+
+                loginButton.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Tente novamente`;
+                loginButton.style.background = "linear-gradient(135deg, #f87171, #ef4444)";
+
+                mostrarMensagem(error.message || "Não foi possível iniciar a sessão.");
+
+                setTimeout(function () {
+                    loginButton.disabled = false;
+                    loginButton.innerHTML = originalText;
+                    loginButton.style.background = "";
+                }, 2000);
+            }
+        });
+
+        emailInput.addEventListener("input", function () {
+            this.classList.remove("input-error");
+        });
+
+        senhaInput.addEventListener("input", function () {
+            this.classList.remove("input-error");
+        });
+
+        document.getElementById("forgot-password").addEventListener("click", function (e) {
+            e.preventDefault();
+            mostrarMensagem("Para recuperar a palavra-passe, contacte contacto@tyvora.com.");
+        });
+
+        // Se já houver sessão, segue logo para a página pedida
+        Tyvora.pronto.then(function (u) { if (u) window.location.href = destinoPosLogin(); });
+    </script>
+
+</body>
+
+</html>

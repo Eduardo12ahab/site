@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>As minhas encomendas - Tyvora</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        .enc-card { background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);
+            padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+        .enc-topo { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .75rem; }
+        .enc-linhas { width: 100%; border-collapse: collapse; margin: .75rem 0; font-size: .9rem; }
+        .enc-linhas th, .enc-linhas td { text-align: left; padding: .4rem .3rem; border-bottom: 1px solid #e5e7eb; }
+        .enc-acoes { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem; }
+        .badge-estado { display: inline-block; padding: .2rem .7rem; border-radius: 20px; font-size: .8rem; }
+        .dev-form { margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 8px; }
+        .dev-form label { display: block; font-size: .85rem; margin-bottom: .75rem; }
+        .dev-form input[type=text], .dev-form input[type=number] { padding: .4rem .6rem; border: 1px solid #d1d5db; border-radius: 6px; font: inherit; }
+        .dev-form input[type=text] { width: 100%; }
+        .pagina-titulo { margin: 2.5rem 0 1.5rem; }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <nav class="container-wide navbar">
+            <a href="/" class="logo">
+                <span class="logo-icon"><i class="fas fa-bolt"></i></span>
+                Tyvora
+            </a>
+            <ul class="nav-links"></ul>
+        </nav>
+    </header>
+
+    <main class="container" style="min-height: 70vh; padding-bottom: 3rem;">
+        <h1 class="pagina-titulo">As minhas encomendas</h1>
+        <div id="enc-erro" style="color:#991b1b;"></div>
+        <div id="lista-encomendas"><div class="loading"><div class="loading-spinner"></div></div></div>
+
+        <h2 class="pagina-titulo">As minhas devoluções</h2>
+        <div id="lista-devolucoes"></div>
+    </main>
+
+    <footer class="footer">
+        <div class="container-wide">
+            <div class="footer-bottom">
+                <p>&copy; 2026 Tyvora. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        const $ = (id) => document.getElementById(id);
+        let encomendas = [];
+
+        function linhasHtml(e) {
+            return `<table class="enc-linhas"><thead><tr><th>Produto</th><th>Qtd.</th><th>Preço unit.</th><th>Subtotal</th></tr></thead><tbody>${
+                (e.linhas || []).map(l => `<tr><td>${escapeHtml(l.nome)}</td><td>${escapeHtml(l.quantidade)}</td>` +
+                    `<td>${formatarMoeda(l.precoUnitario)}</td><td>${formatarMoeda(l.precoUnitario * l.quantidade)}</td></tr>`).join('')
+            }</tbody></table>`;
+        }
+
+        function cartaoEncomenda(e) {
+            const m = e.morada || {};
+            const pag = e.pagamento;
+            const botoes = [];
+            if (e.estado === 'Pendente') botoes.push(`<button type="button" class="btn btn-primary" data-acao="pagar" data-id="${escapeHtml(e.id)}">Pagar</button>`);
+            if (e.estado === 'Pendente' || e.estado === 'Paga') botoes.push(`<button type="button" class="btn btn-outline" data-acao="cancelar" data-id="${escapeHtml(e.id)}">Cancelar</button>`);
+            if (e.estado === 'Entregue') botoes.push(`<button type="button" class="btn btn-outline" data-acao="devolver" data-id="${escapeHtml(e.id)}">Pedir devolução</button>`);
+            return `
+            <div class="enc-card" id="enc-${escapeHtml(e.id)}">
+                <div class="enc-topo">
+                    <div><strong>Encomenda #${escapeHtml(e.id)}</strong>
+                        <span style="color:var(--text-muted);margin-left:.5rem;">${escapeHtml(formatarData(e.data))}</span></div>
+                    <div>${badgeEstado(e.estado)}</div>
+                </div>
+                ${linhasHtml(e)}
+                <div style="font-size:.9rem;">
+                    <div>Portes: ${formatarMoeda(e.portes)}${e.cupao ? ' &middot; Cupão: ' + escapeHtml(e.cupao) : ''}</div>
+                    <div>Morada: ${escapeHtml([m.rua, m.codigoPostal, m.cidade, m.pais].filter(Boolean).join(', '))}</div>
+                    ${pag ? `<div>Pagamento: ${escapeHtml(pag.metodo)} ${badgeEstado(pag.estado)}</div>` : ''}
+                    <div style="margin-top:.4rem;font-size:1.05rem;"><strong>Total: ${formatarMoeda(e.total)}</strong></div>
+                </div>
+                <div class="enc-acoes">${botoes.join('')}</div>
+                <div class="dev-slot"></div>
+            </div>`;
+        }
+
+        async function carregarEncomendas() {
+            const caixa = $('lista-encomendas');
+            try {
+                encomendas = (await api('GET', '/api/encomendas')) || [];
+                $('enc-erro').textContent = '';
+            } catch (e) {
+                $('enc-erro').textContent = 'Erro ao carregar encomendas: ' + e.message;
+                caixa.innerHTML = '';
+                return;
+            }
+            if (encomendas.length === 0) {
+                caixa.innerHTML = '<p>Ainda não fez nenhuma encomenda. <a href="/produtos">Ver produtos</a></p>';
+                return;
+            }
+            caixa.innerHTML = encomendas.map(cartaoEncomenda).join('');
+            caixa.querySelectorAll('[data-acao]').forEach(b => b.addEventListener('click', () => {
+                const id = b.dataset.id;
+                if (b.dataset.acao === 'pagar') acao(id, 'pagar', 'Encomenda paga');
+                else if (b.dataset.acao === 'cancelar') {
+                    if (confirm('Cancelar a encomenda #' + id + '?')) acao(id, 'cancelar', 'Encomenda cancelada');
+                } else abrirDevolucao(id);
+            }));
+        }
+
+        async function acao(id, nome, msg) {
+            try {
+                await api('POST', '/api/encomendas/' + encodeURIComponent(id) + '/' + nome);
+                mostrarAviso(msg);
+            } catch (e) {
+                mostrarAviso(e.message, 'error');
+            }
+            await carregarEncomendas();
+        }
+
+        // Formulário simples de devolução: motivo + quantidade por linha
+        function abrirDevolucao(id) {
+            const e = encomendas.find(x => String(x.id) === String(id));
+            if (!e) return;
+            const slot = $('enc-' + id).querySelector('.dev-slot');
+            slot.innerHTML = `
+                <form class="dev-form">
+                    <label>Motivo <input type="text" name="motivo" maxlength="500" required></label>
+                    ${(e.linhas || []).map(l => `
+                        <label>${escapeHtml(l.nome)} (comprado: ${escapeHtml(l.quantidade)}) - devolver
+                            <input type="number" min="0" max="${escapeHtml(l.quantidade)}" value="0" data-produto="${escapeHtml(l.produtoId)}" style="width:5rem;"></label>`).join('')}
+                    <p class="dev-erro" style="color:#991b1b;"></p>
+                    <button type="submit" class="btn btn-primary">Enviar pedido</button>
+                    <button type="button" class="btn btn-outline dev-cancelar">Fechar</button>
+                </form>`;
+            const form = slot.querySelector('form');
+            slot.querySelector('.dev-cancelar').addEventListener('click', () => { slot.innerHTML = ''; });
+            form.addEventListener('submit', async (ev) => {
+                ev.preventDefault();
+                const itens = Array.from(form.querySelectorAll('input[data-produto]'))
+                    .map(i => ({ produtoId: Number(i.dataset.produto), quantidade: Number(i.value) }))
+                    .filter(i => i.quantidade > 0);
+                const erro = form.querySelector('.dev-erro');
+                if (itens.length === 0) { erro.textContent = 'Indique a quantidade de pelo menos um produto.'; return; }
+                try {
+                    await api('POST', '/api/devolucoes', { encomendaId: e.id, motivo: form.motivo.value.trim(), itens });
+                    mostrarAviso('Pedido de devolução enviado');
+                    slot.innerHTML = '';
+                    await carregarDevolucoes();
+                } catch (err) {
+                    erro.textContent = err.message;
+                }
+            });
+        }
+
+        async function carregarDevolucoes() {
+            const caixa = $('lista-devolucoes');
+            try {
+                const lista = (await api('GET', '/api/devolucoes')) || [];
+                caixa.innerHTML = lista.length === 0 ? '<p>Não tem devoluções.</p>' : lista.map(d => `
+                    <div class="enc-card">
+                        <div class="enc-topo">
+                            <div><strong>Devolução #${escapeHtml(d.id)}</strong> (encomenda #${escapeHtml(d.encomendaId)})
+                                <span style="color:var(--text-muted);margin-left:.5rem;">${escapeHtml(formatarData(d.data))}</span></div>
+                            <div>${badgeEstado(d.estado)}</div>
+                        </div>
+                        <p style="margin:.5rem 0;">Motivo: ${escapeHtml(d.motivo || '')}</p>
+                        <ul style="margin-left:1.2rem;">${(d.itens || []).map(i => `<li>${escapeHtml(i.quantidade)}x ${escapeHtml(i.nome)}</li>`).join('')}</ul>
+                    </div>`).join('');
+            } catch (e) {
+                caixa.innerHTML = '<p style="color:#991b1b;">Erro ao carregar devoluções: ' + escapeHtml(e.message) + '</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!await Tyvora.exigirLogin()) return;
+            await Promise.all([carregarEncomendas(), carregarDevolucoes()]);
+        });
+    </script>
+</body>
+
+</html>

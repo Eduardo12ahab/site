@@ -1,0 +1,14 @@
+# Copiar para application-local.properties (ignorado pelo git) e ativar com:
+#   set SPRING_PROFILES_ACTIVE=local    (ou  mvn spring-boot:run -Dspring-boot.run.profiles=local)
+# Em alternativa, usar as variaveis de ambiente DB_URL, DB_USER e DB_PASS.
+
+# Autenticacao SQL Server: pôr aqui o utilizador e a palavra-passe (nunca no git)
+spring.datasource.username=ecommerce_app
+spring.datasource.password=COLOCAR_PALAVRA_PASSE_AQUI
+
+# URL por defeito do projeto (instancia SQLEXPRESS, descoberta via SQL Server Browser)
+spring.datasource.url=jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;databaseName=EcommerceDB;encrypt=true;trustServerCertificate=true
+
+# Instancia nomeada (ex.: SQL Server Express). Exige o servico "SQL Server Browser"
+# a correr e o protocolo TCP/IP ativo no SQL Server Configuration Manager:
+#spring.datasource.url=jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=EcommerceDB;encrypt=true;trustServerCertificate=true

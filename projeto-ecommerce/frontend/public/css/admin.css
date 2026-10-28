@@ -1,0 +1,50 @@
+/* Estilos comuns às páginas de administração (complementa /css/style.css) */
+.admin-container { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
+.admin-sidebar { background: var(--dark); color: white; padding: 2rem 0; }
+.admin-content { padding: 2rem; background: #f8fafc; min-width: 0; }
+.admin-logo { padding: 0 2rem; margin-bottom: 2rem; }
+.admin-nav { list-style: none; padding: 0; margin: 0; }
+.admin-nav a { display: flex; align-items: center; gap: 1rem; padding: 1rem 2rem; color: rgba(255, 255, 255, 0.8);
+    text-decoration: none; transition: all 0.3s ease; border-left: 4px solid transparent; }
+.admin-nav a:hover, .admin-nav a.active { background: rgba(255, 255, 255, 0.1); color: white; border-left-color: var(--primary); }
+.admin-nav i { width: 20px; text-align: center; }
+
+.admin-topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+.admin-topo h1 { font-size: 2rem; margin: 0; }
+.admin-topo-user { display: flex; align-items: center; gap: 1rem; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+.stat-card { background: white; padding: 1.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);
+    display: flex; align-items: center; gap: 1rem; }
+.stat-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; color: white; }
+.stat-content h3 { font-size: 1.5rem; margin: 0; }
+.stat-content p { color: var(--gray); margin: 0; }
+
+.painel { background: white; padding: 1.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow-sm); margin-bottom: 2rem; }
+.painel h3 { margin-bottom: 1rem; }
+.tabela-wrap { overflow-x: auto; }
+.tabela { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.tabela th, .tabela td { text-align: left; padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--gray-light); vertical-align: top; }
+.tabela th { font-weight: 600; white-space: nowrap; }
+.acoes-linha { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.btn-mini { padding: 0.3rem 0.7rem; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--gray-light); background: white; cursor: pointer; }
+.btn-mini:hover { background: #f1f5f9; }
+.btn-mini.perigo { color: #991b1b; border-color: #fecaca; }
+.btn-mini:disabled { opacity: 0.5; cursor: not-allowed; }
+.badge-estado { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.8rem; background: #e5e7eb; color: #374151; }
+.msg-erro { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; }
+.msg-vazio { color: var(--gray); padding: 1rem 0; }
+.filtros { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+.filtros select, .filtros input, .form-grid input, .form-grid select, .form-grid textarea {
+    padding: 0.5rem 0.75rem; border: 1px solid var(--gray-light); border-radius: 8px; font: inherit; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; }
+.form-grid label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; }
+.form-grid .larga { grid-column: 1 / -1; }
+
+@media (max-width: 800px) {
+    .admin-container { grid-template-columns: 1fr; }
+    .admin-sidebar { padding: 1rem 0; }
+    .admin-nav { display: flex; flex-wrap: wrap; }
+    .admin-nav a { padding: 0.6rem 1rem; }
+}

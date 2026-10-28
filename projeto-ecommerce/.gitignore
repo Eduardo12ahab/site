@@ -1,0 +1,16 @@
+﻿# Dependências e builds
+node_modules/
+target/
+
+# Ambiente e segredos
+.env
+application-local.properties
+
+# IDE / sistema
+.vs/
+.vscode/
+.idea/
+.expo/
+*.iml
+.DS_Store
+*.log

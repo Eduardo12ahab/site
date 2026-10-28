@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Criar Conta - Tyvora</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+  
+
+        :root {
+            --bg: #ffffff;
+            --bg-elevated: #fafafa;
+            --bg-card: #ffffff;
+            --bg-card-hover: #fbfbfd;
+            --border: #e5e5e7;
+            --border-light: #d2d2d7;
+
+            --text: #1d1d1f;
+            --text-muted: #6e6e73;
+            --text-dim: #86868b;
+
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --accent-soft: #8b5cf6;
+            --accent-warm: #f59e0b;
+
+            --success: #16a34a;
+            --danger: #ef4444;
+
+            --radius: 18px;
+            --radius-sm: 12px;
+            --radius-pill: 980px;
+
+            --transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            --transition-fast: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --shadow-lift: 0 12px 40px rgba(0, 0, 0, 0.10);
+            --glow-accent: 0 0 40px rgba(0, 113, 227, 0.18);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        body {
+            min-width: 320px;
+            overflow-x: hidden;
+
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        .container {
+            width: min(100% - 2rem, 1200px);
+            margin-inline: auto;
+        }
+
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(0, 113, 227, 0.35) 50%,
+                    transparent 100%);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .navbar {
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+
+        /* LOGO */
+
+        .logo {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+
+            text-decoration: none;
+            color: var(--text);
+            transition: var(--transition-fast);
+        }
+
+        .logo-icon {
+            display: inline-grid;
+            place-items: center;
+
+            width: 36px;
+            height: 36px;
+
+            margin-right: 0.5rem;
+
+            border-radius: 10px;
+
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            color: #fff !important;
+            font-size: 0.9rem;
+
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+            transition: var(--transition-fast);
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(-8deg) scale(1.05);
+        }
+
+
+        /* NAVEGAÇÃO */
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 44px;
+            padding: 0.65rem 1rem;
+
+            border-radius: 10px;
+
+            color: var(--text-muted);
+
+            font-size: 0.9rem;
+            font-weight: 500;
+
+            text-decoration: none;
+            white-space: nowrap;
+
+            transition: var(--transition-fast);
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: var(--bg-elevated);
+        }
+
+        .nav-link.active {
+            color: var(--accent) !important;
+            background: rgba(0, 113, 227, 0.08);
+        }
+
+        .nav-link.active::after {
+            width: calc(100% - 24px);
+        }
+
+        /* Botão do carrinho desenhado pelo main.js */
+        .cart-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 1.1rem;
+            border: none;
+            border-radius: var(--radius-pill);
+            background: var(--accent);
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: 0 4px 16px rgba(0, 113, 227, 0.25);
+            transition: var(--transition-fast);
+        }
+
+        .cart-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .cart-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            padding: 0.1rem 0.5rem;
+            border-radius: var(--radius-pill);
+            background: rgba(255, 255, 255, 0.25);
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+
+        main.container {
+            min-height: calc(100vh - 80px);
+            min-height: calc(100dvh - 80px);
+
+            padding: clamp(2rem, 6vw, 4.5rem) 0 clamp(3rem, 7vw, 5rem);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            position: relative;
+        }
+
+        /* Glow radial subtil no fundo */
+        main.container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle,
+                    rgba(0, 113, 227, 0.06) 0%,
+                    rgba(139, 92, 246, 0.03) 35%,
+                    transparent 65%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        main.container>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            width: min(100%, 520px);
+
+            padding: clamp(1.5rem, 4vw, 2.7rem);
+
+            background: var(--bg-card);
+
+            border: 1px solid var(--border);
+            border-radius: clamp(18px, 3vw, 24px);
+
+            box-shadow: var(--shadow-lift);
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Linha de topo gradiente subtil */
+        .form-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 15%;
+            right: 15%;
+            height: 2px;
+            background: linear-gradient(90deg,
+                    transparent,
+                    var(--accent) 50%,
+                    transparent);
+            opacity: 0.6;
+        }
+
+        .form-container>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container .logo {
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .form-title {
+            font-size: clamp(1.55rem, 4vw, 2rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .form-description {
+            max-width: 420px;
+            margin-inline: auto;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 1.05rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+
+
+        .form-input {
+            width: 100%;
+            min-height: 52px;
+            padding: 0.85rem 1rem;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            background: var(--bg-elevated);
+            color: var(--text);
+
+            font-size: 0.95rem;
+            outline: none;
+
+            transition: var(--transition-fast);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .form-input:hover {
+            border-color: var(--border-light);
+            background: #ffffff;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.10);
+            transform: translateY(-1px);
+        }
+
+        .form-input.input-error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.10);
+        }
+
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper .form-input {
+            padding-right: 3.5rem;
+        }
+
+        #toggle-senha,
+        #toggle-confirmar-senha {
+            position: absolute;
+            right: 0.55rem;
+            top: 50%;
+            transform: translateY(-50%);
+
+            width: 40px;
+            height: 40px;
+
+            display: grid;
+            place-items: center;
+
+            border: none !important;
+            border-radius: 9px !important;
+
+            background: transparent !important;
+            color: var(--text-muted) !important;
+
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        #toggle-senha:hover,
+        #toggle-confirmar-senha:hover {
+            background: rgba(0, 113, 227, 0.08) !important;
+            color: var(--accent) !important;
+        }
+
+        #toggle-senha:focus-visible,
+        #toggle-confirmar-senha:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .password-strength {
+            margin-top: 0.55rem;
+        }
+
+        #forca-senha {
+            width: 0%;
+            height: 4px;
+            margin-bottom: 0.5rem;
+            border-radius: 999px;
+            background: var(--border);
+            transition: width 0.25s ease, background 0.25s ease;
+        }
+
+        .password-help {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            line-height: 1.5;
+        }
+
+        #senha-match {
+            min-height: 20px;
+            margin-top: 0.5rem;
+        }
+
+
+        .terms-wrapper {
+            margin-bottom: 1.5rem;
+        }
+
+        .terms-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+            accent-color: var(--accent);
+        }
+
+        .terms-text {
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }
+
+        .terms-text a {
+            color: var(--accent);
+            font-weight: 500;
+            text-decoration: underline;
+        }
+
+        .terms-text a:hover {
+            color: var(--accent-hover);
+        }
+
+
+        .btn {
+            border-radius: var(--radius-pill) !important;
+            font-weight: 500 !important;
+            transition: var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .full-width-button {
+            width: 100%;
+            padding: 1rem;
+        }
+
+        .btn-primary {
+            min-height: 52px;
+            border: none !important;
+            background: var(--accent) !important;
+            color: #fff !important;
+            box-shadow: 0 4px 16px rgba(0, 113, 227, 0.25);
+            cursor: pointer;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover) !important;
+            transform: translateY(-1px);
+            box-shadow:
+                0 8px 28px rgba(0, 113, 227, 0.35),
+                var(--glow-accent);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            min-height: 50px;
+            border: 1px solid var(--border-light) !important;
+            background: transparent !important;
+            color: var(--text) !important;
+        }
+
+        .btn-outline:hover {
+            transform: translateY(-1px);
+            border-color: var(--accent) !important;
+            background: rgba(0, 113, 227, 0.05) !important;
+            color: var(--accent) !important;
+        }
+
+        .btn-link {
+            color: var(--accent) !important;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline !important;
+        }
+
+        .account-button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.95rem;
+            margin-top: 0.5rem;
+            text-decoration: none;
+        }
+
+
+        .benefits-section {
+            padding: clamp(3rem, 6vw, 4.5rem) 0;
+            background: var(--bg-elevated);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .benefits-title {
+            margin-bottom: 2.2rem;
+            font-size: clamp(1.35rem, 3vw, 1.65rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            color: var(--text);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .benefit-card {
+            min-height: 220px;
+            padding: 1.7rem 1.2rem;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-light);
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* Ícone em quadrado arredondado estilo Apple */
+        .benefit-icon {
+            display: inline-grid;
+            place-items: center;
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+
+            background: linear-gradient(135deg,
+                    rgba(0, 113, 227, 0.10),
+                    rgba(139, 92, 246, 0.08));
+            border: 1px solid rgba(0, 113, 227, 0.15);
+            color: var(--accent);
+            font-size: 1.1rem;
+
+            transition: var(--transition-fast);
+        }
+
+        .benefit-card:hover .benefit-icon {
+            transform: scale(1.08) rotate(-4deg);
+            color: var(--accent-soft);
+            border-color: rgba(139, 92, 246, 0.25);
+        }
+
+        .benefit-card h4 {
+            margin-bottom: 0.55rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        .benefit-card p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.825rem;
+            line-height: 1.6;
+        }
+
+
+        .footer {
+            padding-top: 3.5rem;
+            background: var(--bg-elevated);
+            color: var(--text);
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 3rem;
+            padding-bottom: 3rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .footer-logo i {
+            color: var(--accent);
+        }
+
+        .footer-description {
+            max-width: 380px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-size: 0.85rem;
+        }
+
+        .footer-links h3 {
+            margin-bottom: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text);
+        }
+
+        .footer-links ul {
+            display: grid;
+            gap: 0.7rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent) !important;
+        }
+
+        .footer-bottom {
+            padding: 1.5rem 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+
+        .form-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 500;
+            line-height: 1.5;
+            font-size: 0.9rem;
+            animation: messageIn 0.3s ease;
+        }
+
+        .form-message.success {
+            background: rgba(22, 163, 74, 0.08);
+            border: 1px solid rgba(22, 163, 74, 0.25);
+            color: var(--success);
+        }
+
+        .form-message.error {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: var(--danger);
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-4 {
+            margin-bottom: 2rem;
+        }
+
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+
+
+        @media (max-width: 900px) {
+            .benefits-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .footer-grid {
+                grid-template-columns: 1.5fr 1fr 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                width: min(100% - 1.5rem, 1200px);
+            }
+
+            .navbar {
+                min-height: 68px;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                gap: 0.25rem;
+            }
+
+            .nav-link {
+                min-height: 42px;
+                padding: 0.6rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            main.container {
+                min-height: auto;
+                padding: 2.5rem 0 3.5rem;
+            }
+
+            .form-container {
+                box-shadow: var(--shadow-soft);
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .container {
+                width: min(100% - 1rem, 1200px);
+            }
+
+            .navbar {
+                min-height: auto;
+                padding: 0.75rem 0;
+                flex-direction: column;
+                gap: 0.7rem;
+            }
+
+            .logo {
+                font-size: 1.15rem;
+            }
+
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+                margin-right: 0.5rem;
+            }
+
+            .nav-links {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.35rem;
+            }
+
+            .nav-link {
+                min-height: 40px;
+                padding: 0.6rem 0.75rem;
+                font-size: 0.82rem;
+            }
+
+            .nav-link.active::after {
+                width: calc(100% - 20px);
+            }
+
+            main.container {
+                padding: 1.5rem 0 2.5rem;
+            }
+
+            .form-container {
+                width: 100%;
+                padding: 1.4rem;
+                border-radius: 18px;
+            }
+
+            .form-container .logo {
+                font-size: 1.15rem;
+            }
+
+            .form-title {
+                font-size: 1.5rem;
+            }
+
+            .form-description {
+                font-size: 0.86rem;
+            }
+
+            /* 16px evita zoom em iOS */
+            .form-input {
+                min-height: 50px;
+                font-size: 16px;
+            }
+
+            .benefits-section {
+                padding: 3rem 0;
+            }
+
+            .benefits-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.7rem;
+            }
+
+            .benefit-card {
+                min-height: 200px;
+                padding: 1.25rem 0.7rem;
+                border-radius: 14px;
+            }
+
+            .benefit-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1rem;
+                margin-bottom: 0.7rem;
+            }
+
+            .benefit-card h4 {
+                font-size: 0.88rem;
+            }
+
+            .benefit-card p {
+                font-size: 0.76rem;
+            }
+
+            .footer {
+                padding-top: 2.5rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding-bottom: 2.5rem;
+            }
+
+            .footer-description {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .container {
+                width: calc(100% - 1rem);
+            }
+
+            .navbar {
+                gap: 0.6rem;
+            }
+
+            .nav-links {
+                gap: 0.3rem;
+            }
+
+            .nav-link {
+                min-height: 38px;
+                padding: 0.55rem 0.65rem;
+                font-size: 0.78rem;
+            }
+
+            .form-container {
+                padding: 1.2rem;
+                border-radius: 16px;
+            }
+
+            .form-title {
+                font-size: 1.35rem;
+            }
+
+            .form-description {
+                font-size: 0.82rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .form-label {
+                font-size: 0.82rem;
+            }
+
+            .form-input {
+                min-height: 48px;
+                padding: 0.75rem 0.85rem;
+                font-size: 16px;
+            }
+
+            .terms-text {
+                font-size: 0.82rem;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .benefit-card {
+                min-height: auto;
+                display: grid;
+                grid-template-columns: 48px 1fr;
+                column-gap: 0.8rem;
+                text-align: left;
+                align-items: center;
+            }
+
+            .benefit-icon {
+                grid-row: span 2;
+                margin: 0;
+            }
+
+            .benefit-card h4 {
+                margin-bottom: 0.25rem;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .container {
+                width: calc(100% - 0.75rem);
+            }
+
+            .form-container {
+                padding: 1rem;
+                border-radius: 14px;
+            }
+
+            .form-title {
+                font-size: 1.25rem;
+            }
+
+            .nav-link {
+                font-size: 0.72rem;
+                padding: 0.5rem 0.55rem;
+            }
+
+            .btn-primary,
+            .btn-outline {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            main.container {
+                padding-top: 5rem;
+                padding-bottom: 6rem;
+            }
+
+            .form-container {
+                width: 540px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <nav class="container navbar">
+
+            <a href="/" class="logo">
+                <span class="logo-icon">
+                    <i class="fas fa-bolt"></i>
+                </span>
+                Tyvora
+            </a>
+
+            <ul class="nav-links">
+                <li>
+                    <a href="/" class="nav-link">Início</a>
+                </li>
+                <li>
+                    <a href="/produtos" class="nav-link">Produtos</a>
+                </li>
+                <li>
+                    <a href="/login" class="nav-link">Iniciar sessão</a>
+                </li>
+                <li>
+                    <a href="/cadastro" class="nav-link active">Criar conta</a>
+                </li>
+            </ul>
+
+        </nav>
+    </header>
+
+
+    <!-- FORMULÁRIO -->
+    <main class="container">
+
+        <div class="form-container">
+
+            <div class="text-center mb-4">
+
+                <div class="logo">
+                    <span class="logo-icon">
+                        <i class="fas fa-bolt"></i>
+                    </span>
+                    Tyvora
+                </div>
+
+                <h2 class="form-title">Criar a sua conta</h2>
+
+                <p class="form-description">
+                    Crie a sua conta Tyvora e tenha uma experiência
+                    de compra mais simples.
+                </p>
+
+            </div>
+
+
+            <form id="cadastro-form">
+
+                <div class="form-group">
+                    <label for="nome" class="form-label">Nome completo *</label>
+                    <input type="text" id="nome" name="nome" class="form-input"
+                        placeholder="Introduza o seu nome completo" autocomplete="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Endereço de email *</label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="o.seu@email.com"
+                        autocomplete="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone" class="form-label">Telefone</label>
+                    <input type="tel" id="telefone" name="telefone" class="form-input" placeholder="+351 900 000 000"
+                        autocomplete="tel" maxlength="20">
+                </div>
+
+                <div class="form-group">
+                    <label for="nif" class="form-label">NIF</label>
+                    <input type="text" id="nif" name="nif" class="form-input" placeholder="123456789" maxlength="20">
+                </div>
+
+                <div class="form-group">
+                    <label for="senha" class="form-label">Palavra-passe *</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="senha" name="senha" class="form-input"
+                            placeholder="Crie uma palavra-passe" autocomplete="new-password" minlength="6" required>
+                        <button type="button" id="toggle-senha" aria-label="Mostrar palavra-passe">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+
+                    <div class="password-strength">
+                        <div id="forca-senha"></div>
+                        <small class="password-help">
+                            Utilize pelo menos 6 caracteres.
+                            Para maior segurança, combine letras, números e símbolos.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmar-senha" class="form-label">Confirmar palavra-passe *</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="confirmar-senha" name="confirmar-senha" class="form-input"
+                            placeholder="Introduza novamente a palavra-passe" autocomplete="new-password" minlength="6"
+                            required>
+                        <button type="button" id="toggle-confirmar-senha"
+                            aria-label="Mostrar confirmação da palavra-passe">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div id="senha-match"></div>
+                </div>
+
+                <div class="terms-wrapper">
+                    <label class="terms-label">
+                        <input type="checkbox" name="termos" required>
+                        <span class="terms-text">
+                            Li e aceito os Termos de utilização e a Política de privacidade.
+                        </span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary full-width-button">
+                    <i class="fas fa-user-plus"></i>
+                    Criar conta
+                </button>
+
+            </form>
+
+
+            <div class="text-center mt-4">
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Já tem uma conta?</p>
+                <a href="/login" class="btn btn-outline account-button">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Iniciar sessão
+                </a>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="/" class="btn btn-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar à loja
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- VANTAGENS -->
+    <section class="benefits-section">
+
+        <div class="container">
+
+            <h3 class="text-center benefits-title">
+                Descubra as vantagens de ter uma conta
+            </h3>
+
+            <div class="benefits-grid">
+
+                <div class="benefit-card">
+                    <i class="fas fa-shopping-cart benefit-icon"></i>
+                    <div>
+                        <h4>Compras mais rápidas</h4>
+                        <p>Guarde os seus dados e torne as próximas compras mais simples.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-card">
+                    <i class="fas fa-history benefit-icon"></i>
+                    <div>
+                        <h4>Histórico de encomendas</h4>
+                        <p>Consulte as suas encomendas e acompanhe o estado das entregas.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-card">
+                    <i class="fas fa-star benefit-icon"></i>
+                    <div>
+                        <h4>Avaliações</h4>
+                        <p>Dê a sua opinião sobre os produtos e ajude outros clientes.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-card">
+                    <i class="fas fa-rotate-left benefit-icon"></i>
+                    <div>
+                        <h4>Devoluções simples</h4>
+                        <p>Peça a devolução de uma encomenda entregue diretamente na sua conta.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="footer-grid">
+
+                <div>
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt"></i>
+                        TYVORA
+                    </div>
+                    <p class="footer-description">
+                        Uma experiência de compra simples, segura e pensada para si.
+                    </p>
+                </div>
+
+                <div class="footer-links">
+                    <h3>Loja</h3>
+                    <ul>
+                        <li><a href="/">Início</a></li>
+                        <li><a href="/produtos">Produtos</a></li>
+                        <li><a href="/carrinho">Carrinho</a></li>
+                        <li><a href="/login">Iniciar sessão</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h3>Ajuda</h3>
+                    <ul>
+                        <li><a href="#">Apoio ao cliente</a></li>
+                        <li><a href="#">Perguntas frequentes</a></li>
+                        <li><a href="mailto:contacto@tyvora.com">Contactos</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Tyvora. Todos os direitos reservados.</p>
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- JAVASCRIPT -->
+    <script src="/js/main.js"></script>
+    <script>
+        document.getElementById("toggle-senha").addEventListener("click", function () {
+            const senhaInput = document.getElementById("senha");
+            const icon = this.querySelector("i");
+
+            if (senhaInput.type === "password") {
+                senhaInput.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+                this.setAttribute("aria-label", "Ocultar a palavra-passe");
+            } else {
+                senhaInput.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+                this.setAttribute("aria-label", "Mostrar a palavra-passe");
+            }
+        });
+
+        document.getElementById("toggle-confirmar-senha").addEventListener("click", function () {
+            const input = document.getElementById("confirmar-senha");
+            const icon = this.querySelector("i");
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+                this.setAttribute("aria-label", "Ocultar confirmação da palavra-passe");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+                this.setAttribute("aria-label", "Mostrar confirmação da palavra-passe");
+            }
+        });
+
+        document.getElementById("senha").addEventListener("input", function () {
+            const senha = this.value;
+            const barra = document.getElementById("forca-senha");
+            let forca = 0;
+
+            if (senha.length >= 6) forca = 1;
+            if (senha.length >= 8 && /[a-z]/.test(senha) && /[A-Z]/.test(senha)) forca = 2;
+            if (senha.length >= 10 && /[a-z]/.test(senha) && /[A-Z]/.test(senha) && /[0-9]/.test(senha)) forca = 3;
+            if (senha.length >= 12 && /[a-z]/.test(senha) && /[A-Z]/.test(senha) && /[0-9]/.test(senha) && /[^A-Za-z0-9]/.test(senha)) forca = 4;
+
+            const larguras = ["0%", "25%", "50%", "75%", "100%"];
+            const cores = ["#e5e5e7", "#ef4444", "#f59e0b", "#2997ff", "#16a34a"];
+
+            barra.style.width = larguras[forca];
+            barra.style.background = cores[forca];
+        });
+
+        document.getElementById("confirmar-senha").addEventListener("input", function () {
+            const senha = document.getElementById("senha").value;
+            const confirmarSenha = this.value;
+            const matchDiv = document.getElementById("senha-match");
+
+            if (confirmarSenha === "") {
+                matchDiv.innerHTML = "";
+                return;
+            }
+
+            if (senha === confirmarSenha) {
+                matchDiv.innerHTML = `
+                    <small style="color: var(--success); font-weight: 500;">
+                        <i class="fas fa-check-circle"></i>
+                        As palavras-passe coincidem.
+                    </small>
+                `;
+            } else {
+                matchDiv.innerHTML = `
+                    <small style="color: var(--danger); font-weight: 500;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        As palavras-passe não coincidem.
+                    </small>
+                `;
+            }
+        });
+
+        document.getElementById("cadastro-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const nome = form.nome.value.trim();
+            const email = form.email.value.trim();
+            const senha = form.senha.value;
+            const confirmarSenha = form["confirmar-senha"].value;
+            const payload = { nome, email, senha };
+            const telefone = form.telefone.value.trim();
+            const nif = form.nif.value.trim();
+            if (telefone) payload.telefone = telefone;
+            if (nif) payload.nif = nif;
+
+            if (senha !== confirmarSenha) {
+                alert("As palavras-passe não coincidem. Verifique os dados introduzidos.");
+                return;
+            }
+
+            if (senha.length < 6) {
+                alert("A palavra-passe deve ter pelo menos 6 caracteres.");
+                return;
+            }
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> A criar a sua conta...`;
+
+            try {
+                const response = await fetch("/api/cadastro", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    submitBtn.innerHTML = `<i class="fas fa-check"></i> A conta foi criada!`;
+                    submitBtn.style.background = "var(--success)";
+
+                    const successDiv = document.createElement("div");
+                    successDiv.className = "form-message success";
+                    successDiv.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <span>A sua conta foi criada com sucesso! A redirecionar para o início de sessão...</span>
+                    `;
+                    form.appendChild(successDiv);
+
+                    setTimeout(() => { window.location.href = "/login" + window.location.search; }, 2000);
+
+                } else {
+                    let error = {};
+                    try { error = await response.json(); } catch { error = {}; }
+                    throw new Error(error.message || "Não foi possível criar a conta. Tente novamente.");
+                }
+
+            } catch (error) {
+                submitBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Tentar novamente`;
+                submitBtn.style.background = "var(--danger)";
+
+                const errorDiv = document.createElement("div");
+                errorDiv.className = "form-message error";
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span></span>';
+                errorDiv.querySelector("span").textContent = error.message || "Não foi possível criar a conta.";
+                form.appendChild(errorDiv);
+
+                setTimeout(() => { errorDiv.remove(); }, 4000);
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.style.background = "";
+                }, 2000);
+            }
+        });
+    </script>
+
+</body>
+
+</html>
